@@ -650,7 +650,7 @@ main {
     border-radius: var(--radius);
     max-width: 640px;
     width: 100%;
-    max-height: 85vh;
+    max-height: 90vh;
     overflow-y: auto;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(37, 99, 235, 0.1);
     border: 1px solid var(--border);
@@ -658,14 +658,15 @@ main {
 }
 
 .modal-large {
-    max-width: 720px;
+    max-width: 900px;
+    width: 95%;
 }
 
 .modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 24px;
+    padding: 16px 20px;
     border-bottom: 1px solid var(--border);
     background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
 }
@@ -709,11 +710,11 @@ main {
 }
 
 .modal-body {
-    padding: 20px 24px;
+    padding: 16px 20px;
 }
 
 .ila-intro {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .ila-intro p {
@@ -749,10 +750,10 @@ main {
 }
 
 .tax-cards {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
 }
 
 .tax-card {
@@ -771,19 +772,19 @@ main {
 .tax-card-header {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
+    gap: 12px;
+    padding: 10px 12px;
     background: rgba(255, 255, 255, 0.02);
     border-bottom: 1px solid var(--border);
 }
 
 .tax-rate-badge {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 800;
     color: var(--primary-light);
-    min-width: 65px;
+    min-width: 55px;
     text-align: center;
-    padding: 8px 12px;
+    padding: 6px 10px;
     background: rgba(37, 99, 235, 0.1);
     border-radius: var(--radius-sm);
     border: 1px solid rgba(37, 99, 235, 0.2);
@@ -818,27 +819,27 @@ main {
 }
 
 .tax-card-body {
-    padding: 16px;
+    padding: 12px;
 }
 
 .tax-description {
-    font-size: 0.88rem;
+    font-size: 0.85rem;
     color: var(--text-light);
-    line-height: 1.5;
-    margin-bottom: 14px;
+    line-height: 1.4;
+    margin-bottom: 10px;
 }
 
 .tax-examples-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    grid-template-columns: 1fr;
+    gap: 6px;
 }
 
 .tax-example-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
+    gap: 6px;
+    padding: 6px 8px;
     background: rgba(255, 255, 255, 0.02);
     border-radius: 6px;
     border: 1px solid transparent;
@@ -856,17 +857,17 @@ main {
 }
 
 .tax-example-item span:last-child {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     color: var(--text);
-    line-height: 1.4;
+    line-height: 1.3;
 }
 
 .tax-alert {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 14px;
-    padding: 12px 14px;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px 12px;
     background: rgba(245, 158, 11, 0.1);
     border: 1px solid rgba(245, 158, 11, 0.2);
     border-radius: var(--radius-sm);
@@ -886,8 +887,8 @@ main {
 .modal-footer-note {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 10px;
+    padding: 12px 14px;
     background: var(--bg-secondary);
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
@@ -900,9 +901,9 @@ main {
 }
 
 .modal-footer-note p {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: var(--text-light);
-    line-height: 1.5;
+    line-height: 1.4;
     margin: 0;
 }
 
@@ -956,6 +957,15 @@ footer p {
     .summary-value {
         font-size: 1rem;
     }
+
+    .modal-large {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .tax-cards {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 480px) {
@@ -965,6 +975,11 @@ footer p {
 
     .summary-card {
         min-height: 60px;
+    }
+
+    .modal {
+        max-height: 95vh;
+        margin: 10px;
     }
 }
 
