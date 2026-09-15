@@ -173,77 +173,177 @@
         </main>
 
         <div class="modal-overlay" id="ilaModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-            <div class="modal">
+            <div class="modal modal-large">
                 <div class="modal-header">
-                    <h3 id="modalTitle">Impuesto a las Bebidas Alcohólicas y Analcohólicas (ILA)</h3>
+                    <div class="modal-title-group">
+                        <span class="modal-icon">🏛️</span>
+                        <h3 id="modalTitle">Impuesto ILA — Guía Completa</h3>
+                    </div>
                     <button type="button" class="modal-close" id="ilaModalClose" aria-label="Cerrar información de impuestos">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <p>Impuesto adicional al IVA que grava la venta e importación de bebidas en Chile. Establecido en el <strong>artículo 42° de la LIVS</strong>, modificado por la Ley N°20.780 (2024).</p>
-                    <p class="modal-source">Fuente: <a href="https://www.sii.cl/preguntas_frecuentes/impuestos_mensuales/001_130_1250.htm" target="_blank" rel="noopener">SII — Preguntas Frecuentes</a></p>
+                    <div class="ila-intro">
+                        <p>Impuesto adicional al IVA que grava la venta e importación de bebidas en Chile. Establecido en el <strong>artículo 42° de la LIVS</strong>, modificado por la Ley N°20.780 (2024).</p>
+                        <a href="https://www.sii.cl/preguntas_frecuentes/impuestos_mensuales/001_130_1250.htm" target="_blank" rel="noopener" class="ila-source-link">
+                            <span class="link-icon">📄</span>
+                            Ver fuente oficial en el SII
+                        </a>
+                    </div>
 
                     <div class="tax-cards">
-                        <div class="tax-card">
-                            <div class="tax-rate">10%</div>
-                            <div class="tax-info">
-                                <strong>Bebidas analcohólicas</strong>
-                                <span>Naturales o artificiales, energizantes o hipertónicas, jarabes y en general cualquier otro producto que las sustituya o que sirva para preparar bebidas similares, y aguas minerales o termales con colorante, sabor o edulcorantes.</span>
-                                <ul class="tax-examples">
-                                    <li>Energizantes — Red Bull, Monster, Speed</li>
-                                    <li>Hipertónicas / isotónicas — Gatorade, Powerade</li>
-                                    <li>Jarabes — Rose's Grenadine, Monin, Giffard</li>
-                                    <li>Gaseosas — Coca-Cola, Fanta, Sprite, Pap, Bilz, Kem</li>
-                                    <li>Aguas saborizadas — Cachantún con limón, Norma con frutilla</li>
-                                    <li>Néctares — Watt's, Daily</li>
-                                </ul>
+                        <div class="tax-card" data-tax="10">
+                            <div class="tax-card-header">
+                                <div class="tax-rate-badge">10%</div>
+                                <div class="tax-card-title">
+                                    <span class="tax-emoji">🥤</span>
+                                    <strong>Bebidas Analcohólicas</strong>
+                                </div>
+                            </div>
+                            <div class="tax-card-body">
+                                <p class="tax-description">Naturales o artificiales, energizantes o hipertónicas, jarabes y en general cualquier otro producto que las sustituya o que sirva para preparar bebidas similares.</p>
+                                <div class="tax-examples-grid">
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">⚡</span>
+                                        <span>Energizantes — Red Bull, Monster, Speed</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🏃</span>
+                                        <span>Hipertónicas — Gatorade, Powerade</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍹</span>
+                                        <span>Jarabes — Rose's, Monin, Giffard</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🥤</span>
+                                        <span>Gaseosas — Coca-Cola, Fanta, Sprite</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">💧</span>
+                                        <span>Aguas saborizadas — Cachantún, Norma</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🧃</span>
+                                        <span>Néctares — Watt's, Daily</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="tax-card">
-                            <div class="tax-rate warn">18%</div>
-                            <div class="tax-info">
-                                <strong>Altas en azúcar</strong>
-                                <span>Mismo tipo de bebidas analcohólicas pero con más de 6,25 g de azúcar por cada 100 ml (art. 5° Ley N°20.606).</span>
-                                <ul class="tax-examples">
-                                    <li>Gaseosas con alta carga de azúcar (Coca-Cola, Pap)</li>
-                                    <li>Néctares densos — Watt's frutilla, Daily durazno</li>
-                                    <li>Jarabes concentrados — listos para diluir</li>
-                                    <li>Energizantes grandes — formulaciones azucaradas</li>
-                                </ul>
-                                <span class="tax-note">Aplica si superan 6,25 g de azúcar por cada 100 ml (proporción equivalente a 15 g por 240 ml, Ley N°20.606).</span>
+
+                        <div class="tax-card" data-tax="18">
+                            <div class="tax-card-header">
+                                <div class="tax-rate-badge warn">18%</div>
+                                <div class="tax-card-title">
+                                    <span class="tax-emoji">🍬</span>
+                                    <strong>Altas en Azúcar</strong>
+                                </div>
+                            </div>
+                            <div class="tax-card-body">
+                                <p class="tax-description">Mismo tipo de bebidas analcohólicas pero con más de 6,25 g de azúcar por cada 100 ml (art. 5° Ley N°20.606).</p>
+                                <div class="tax-examples-grid">
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🥤</span>
+                                        <span>Gaseosas con alta carga de azúcar</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍊</span>
+                                        <span>Néctares densos — Watt's, Daily</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍶</span>
+                                        <span>Jarabes concentrados</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">⚡</span>
+                                        <span>Energizantes formulaciones azucaradas</span>
+                                    </div>
+                                </div>
+                                <div class="tax-alert">
+                                    <span class="alert-icon">⚠️</span>
+                                    <span>Aplica si superan <strong>6,25 g por cada 100 ml</strong> (equivalente a 15 g por 240 ml)</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="tax-card">
-                            <div class="tax-rate">20,5%</div>
-                            <div class="tax-info">
-                                <strong>Vinos, cervezas y similares</strong>
-                                <span>Bebidas alcohólicas fermentadas destinadas al consumo.</span>
-                                <ul class="tax-examples">
-                                    <li>Vinos — Concha y Toro, Santa Rita, Casillero del Diablo</li>
-                                    <li>Vinos espumosos — Chandon, Cono Sur Bicentenario</li>
-                                    <li>Cervezas — Kunstmann, Calaf, Austral, Kross, Royal Guard</li>
-                                    <li>Sidras — Capel, Mistic</li>
-                                    <li>Chichas — artesanales de uva (zona central) y de manzana (sur/Araucanía/Chiloé)</li>
-                                </ul>
+
+                        <div class="tax-card" data-tax="20.5">
+                            <div class="tax-card-header">
+                                <div class="tax-rate-badge">20,5%</div>
+                                <div class="tax-card-title">
+                                    <span class="tax-emoji">🍷</span>
+                                    <strong>Vinos, Cervezas y Similares</strong>
+                                </div>
+                            </div>
+                            <div class="tax-card-body">
+                                <p class="tax-description">Bebidas alcohólicas fermentadas destinadas al consumo.</p>
+                                <div class="tax-examples-grid">
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍷</span>
+                                        <span>Vinos — Concha y Toro, Santa Rita</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🥂</span>
+                                        <span>Espumosos — Chandon, Cono Sur</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍺</span>
+                                        <span>Cervezas — Kunstmann, Calaf, Austral</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍎</span>
+                                        <span>Sidras — Capel, Mistic</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🫗</span>
+                                        <span>Chichas — artesanales uva y manzana</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="tax-card">
-                            <div class="tax-rate danger">31,5%</div>
-                            <div class="tax-info">
-                                <strong>Licores y destilados</strong>
-                                <span>Destilados y licorosos con alto grado de alcohol.</span>
-                                <ul class="tax-examples">
-                                    <li>Pisco — Alto del Carmen, Mistral, Capel, Mal Paso, Republicano</li>
-                                    <li>Whisky — Johnnie Walker, Chivas Regal, Old Smuggler</li>
-                                    <li>Ron — Havana Club, Bacardí</li>
-                                    <li>Aguardiente — artesanales del norte</li>
-                                    <li>Licores — Amaretto Genovese, Triple Sec, Chartreuse</li>
-                                    <li>Vermouth — Martini, Cinzano</li>
-                                </ul>
+
+                        <div class="tax-card" data-tax="31.5">
+                            <div class="tax-card-header">
+                                <div class="tax-rate-badge danger">31,5%</div>
+                                <div class="tax-card-title">
+                                    <span class="tax-emoji">🥃</span>
+                                    <strong>Licores y Destilados</strong>
+                                </div>
+                            </div>
+                            <div class="tax-card-body">
+                                <p class="tax-description">Destilados y licorosos con alto grado de alcohol.</p>
+                                <div class="tax-examples-grid">
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍾</span>
+                                        <span>Pisco — Capel, Mistral, Republicano</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🥃</span>
+                                        <span>Whisky — Johnnie Walker, Chivas</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍸</span>
+                                        <span>Ron — Havana Club, Bacardí</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🫗</span>
+                                        <span>Aguardiente — artesanales del norte</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍹</span>
+                                        <span>Licores — Amaretto, Triple Sec</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍷</span>
+                                        <span>Vermouth — Martini, Cinzano</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <p class="modal-note">El impuesto se aplica sobre la misma base imponible del IVA y se declara en el Formulario 29 del SII.</p>
+                    <div class="modal-footer-note">
+                        <span class="note-icon">📝</span>
+                        <p>El impuesto se aplica sobre la misma base imponible del IVA y se declara en el <strong>Formulario 29</strong> del SII.</p>
+                    </div>
                 </div>
             </div>
         </div>

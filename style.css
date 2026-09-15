@@ -657,15 +657,31 @@ main {
     animation: slideUp 0.3s ease-out;
 }
 
+.modal-large {
+    max-width: 720px;
+}
+
 .modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 24px 28px 0;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
+}
+
+.modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-icon {
+    font-size: 1.5rem;
 }
 
 .modal-header h3 {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--text);
 }
@@ -693,48 +709,57 @@ main {
 }
 
 .modal-body {
-    padding: 20px 28px 28px;
+    padding: 20px 24px;
 }
 
-.modal-body > p {
-    font-size: 0.92rem;
+.ila-intro {
+    margin-bottom: 20px;
+}
+
+.ila-intro p {
+    font-size: 0.9rem;
     color: var(--text-light);
+    line-height: 1.6;
     margin-bottom: 12px;
-    line-height: 1.7;
 }
 
-.modal-source {
-    font-size: 0.85rem !important;
-    margin-bottom: 20px !important;
-}
-
-.modal-source a {
+.ila-source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(37, 99, 235, 0.1);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: var(--radius-sm);
     color: var(--primary-light);
     text-decoration: none;
+    font-size: 0.85rem;
     font-weight: 500;
     transition: var(--transition);
 }
 
-.modal-source a:hover {
-    color: var(--accent-light);
-    text-decoration: underline;
+.ila-source-link:hover {
+    background: rgba(37, 99, 235, 0.2);
+    border-color: var(--primary);
+    transform: translateX(4px);
+}
+
+.link-icon {
+    font-size: 1rem;
 }
 
 .tax-cards {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     margin-bottom: 20px;
 }
 
 .tax-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
     background: var(--bg-secondary);
     border-radius: var(--radius-sm);
-    padding: 18px;
     border: 1px solid var(--border);
+    overflow: hidden;
     transition: var(--transition);
 }
 
@@ -743,90 +768,142 @@ main {
     transform: translateX(4px);
 }
 
-.tax-rate {
-    font-size: 1.3rem;
+.tax-card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--border);
+}
+
+.tax-rate-badge {
+    font-size: 1.2rem;
     font-weight: 800;
     color: var(--primary-light);
-    min-width: 60px;
+    min-width: 65px;
     text-align: center;
-    flex-shrink: 0;
     padding: 8px 12px;
     background: rgba(37, 99, 235, 0.1);
     border-radius: var(--radius-sm);
+    border: 1px solid rgba(37, 99, 235, 0.2);
 }
 
-.tax-rate.warn {
+.tax-rate-badge.warn {
     color: var(--warning);
     background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.2);
 }
 
-.tax-rate.danger {
+.tax-rate-badge.danger {
     color: var(--danger);
     background: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.2);
 }
 
-.tax-info {
+.tax-card-title {
     display: flex;
-    flex-direction: column;
-    gap: 4px;
+    align-items: center;
+    gap: 10px;
     flex: 1;
 }
 
-.tax-info strong {
-    font-size: 0.92rem;
+.tax-emoji {
+    font-size: 1.4rem;
+}
+
+.tax-card-title strong {
+    font-size: 1rem;
     color: var(--text);
 }
 
-.tax-info > span {
+.tax-card-body {
+    padding: 16px;
+}
+
+.tax-description {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+
+.tax-examples-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.tax-example-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    border: 1px solid transparent;
+    transition: var(--transition);
+}
+
+.tax-example-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--border);
+}
+
+.example-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.tax-example-item span:last-child {
+    font-size: 0.82rem;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.tax-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--radius-sm);
+}
+
+.alert-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.tax-alert span:last-child {
+    font-size: 0.85rem;
+    color: var(--warning);
+    line-height: 1.5;
+}
+
+.modal-footer-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+
+.note-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.modal-footer-note p {
     font-size: 0.85rem;
     color: var(--text-light);
     line-height: 1.5;
-}
-
-.tax-examples {
-    list-style: none;
-    margin: 8px 0 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.tax-examples li {
-    font-size: 0.82rem;
-    color: var(--text);
-    padding-left: 16px;
-    position: relative;
-    line-height: 1.5;
-}
-
-.tax-examples li::before {
-    content: '—';
-    position: absolute;
-    left: 0;
-    color: var(--text-muted);
-}
-
-.tax-note {
-    display: block;
-    margin-top: 8px;
-    font-size: 0.8rem !important;
-    color: var(--warning) !important;
-    font-style: italic;
-    padding: 8px 12px;
-    background: rgba(245, 158, 11, 0.05);
-    border-radius: var(--radius-sm);
-    border-left: 3px solid var(--warning);
-}
-
-.modal-note {
-    font-size: 0.85rem !important;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-sm);
-    padding: 14px 18px;
-    border: 1px solid var(--border);
-    color: var(--text-light) !important;
-    margin-bottom: 0 !important;
+    margin: 0;
 }
 
 footer {
