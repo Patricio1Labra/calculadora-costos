@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Costos - Supermercado Chile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📦 Calculadora de Costos y Ventas</h1>
+            <p class="subtitle">Supermercado Chile — cálculo en tiempo real</p>
+        </header>
+
+        <main>
+            <section class="card input-section">
+                <h2>Datos del Producto</h2>
+                <form id="calculatorForm" autocomplete="off" aria-label="Calculadora de costos y ventas">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="productsPerBox">Productos por caja</label>
+                            <input type="number" id="productsPerBox" min="1" required placeholder="Ej: 12">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="totalBoxes">Cantidad de cajas</label>
+                            <input type="number" id="totalBoxes" min="1" required placeholder="Ej: 5">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="basePrice">Precio base ($)</label>
+                            <input type="number" id="basePrice" min="0" step="0.01" required placeholder="Ej: 15000">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="priceIncludesIva">¿El precio incluye IVA?</label>
+                            <select id="priceIncludesIva" required>
+                                <option value="no">No, precio sin IVA</option>
+                                <option value="yes">Sí, precio con IVA incluido</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="label-with-help">
+                                Impuesto adicional (ILA)
+                                <button type="button" class="help-btn" id="ilaHelpBtn" title="¿Qué es el ILA?" aria-label="Información sobre el impuesto ILA" aria-describedby="ilaHelpDesc">?</button>
+                            </label>
+                            <span id="ilaHelpDesc" class="sr-only">Abre un panel con información detallada sobre los impuestos ILA</span>
+                            <select id="taxType">
+                                <option value="none">Ninguno</option>
+                                <option value="analcoholicas">Bebidas analcohólicas / energizantes (10%)</option>
+                                <option value="alto_azucar">Bebidas altas en azúcar (18%)</option>
+                                <option value="vinos_cervezas">Vinos, cervezas, sidras (20,5%)</option>
+                                <option value="licores">Licores, destilados, whisky (31,5%)</option>
+                                <option value="custom">Otro (especificar %)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="customTaxGroup" style="display: none;">
+                            <label for="customTaxPercent">% Impuesto personalizado</label>
+                            <input type="number" id="customTaxPercent" min="0" max="100" step="0.1" placeholder="Ej: 15">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="transportCost">Flete total ($)</label>
+                                <input type="number" id="transportCost" min="0" step="0.01" value="0" placeholder="Monto factura">
+                            </div>
+                            <div class="form-group">
+                                <label for="totalBoxesInFreight">Total cajas en el flete</label>
+                                <input type="number" id="totalBoxesInFreight" min="1" value="1" placeholder="Ej: 14">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="marginPercentage">Margen de ganancia (%)</label>
+                            <input type="number" id="marginPercentage" min="0" max="1000" step="0.1" required placeholder="Ej: 30">
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="button" class="btn-secondary" id="resetBtn">Limpiar</button>
+                    </div>
+                </form>
+            </section>
+
+            <div class="results-wrapper">
+                <section class="card results-section" aria-live="polite" aria-atomic="true">
+                    <h2>📊 Resultados</h2>
+
+                    <div class="summary-grid">
+                        <div class="summary-card primary">
+                            <span class="summary-label">Costo por Unidad</span>
+                            <span class="summary-value" id="costPerUnit">$0</span>
+                        </div>
+                        <div class="summary-card accent">
+                            <span class="summary-label">Precio de Venta / Unidad</span>
+                            <span class="summary-value" id="salePricePerUnit">$0</span>
+                        </div>
+                        <div class="summary-card">
+                            <span class="summary-label">Total Unidades</span>
+                            <span class="summary-value" id="totalUnits">0</span>
+                        </div>
+                        <div class="summary-card profit-card">
+                            <span class="summary-label">Ganancia / Unidad</span>
+                            <span class="summary-value profit" id="profitPerUnit">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="details-grid">
+                        <div class="detail-card">
+                            <h3>💰 Desglose de Costos por Unidad</h3>
+                            <table class="detail-table">
+                                <tr>
+                                    <td>Costo por caja</td>
+                                    <td id="costPerBox">$0</td>
+                                </tr>
+                                <tr>
+                                    <td>Costo unitario (base)</td>
+                                    <td id="costPerUnitDetail">$0</td>
+                                </tr>
+                                <tr>
+                                    <td>IVA (19%)</td>
+                                    <td id="ivaPerUnit">$0</td>
+                                </tr>
+                                <tr class="tax-row" id="taxRow" style="display: none;">
+                                    <td id="taxLabel">Impuesto adicional</td>
+                                    <td id="taxPerUnit">$0</td>
+                                </tr>
+                                <tr>
+                                    <td>Transporte / unidad</td>
+                                    <td id="transportPerUnit">$0</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td><strong>Costo total / unidad</strong></td>
+                                    <td id="costPerUnitTotal"><strong>$0</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="detail-card">
+                            <h3>📈 Resumen de Venta</h3>
+                            <table class="detail-table">
+                                <tr>
+                                    <td>Unidades totales</td>
+                                    <td id="totalUnitsSummary">0</td>
+                                </tr>
+                                <tr>
+                                    <td>Precio venta / unidad</td>
+                                    <td id="salePriceSummary">$0</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Venta total</strong></td>
+                                    <td id="totalSaleValue"><strong>$0</strong></td>
+                                </tr>
+                                <tr>
+                                    <td>Costo total inventario</td>
+                                    <td id="totalCostValue">$0</td>
+                                </tr>
+                                <tr class="profit-row">
+                                    <td><strong>Ganancia total</strong></td>
+                                    <td id="totalProfit"><strong>$0</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <div class="modal-overlay" id="ilaModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Impuesto a las Bebidas Alcohólicas y Analcohólicas (ILA)</h3>
+                    <button type="button" class="modal-close" id="ilaModalClose" aria-label="Cerrar información de impuestos">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Impuesto adicional al IVA que grava la venta e importación de bebidas en Chile. Establecido en el <strong>artículo 42° de la LIVS</strong>, modificado por la Ley N°20.780 (2024).</p>
+                    <p class="modal-source">Fuente: <a href="https://www.sii.cl/preguntas_frecuentes/impuestos_mensuales/001_130_1250.htm" target="_blank" rel="noopener">SII — Preguntas Frecuentes</a></p>
+
+                    <div class="tax-cards">
+                        <div class="tax-card">
+                            <div class="tax-rate">10%</div>
+                            <div class="tax-info">
+                                <strong>Bebidas analcohólicas</strong>
+                                <span>Naturales o artificiales, energizantes o hipertónicas, jarabes y en general cualquier otro producto que las sustituya o que sirva para preparar bebidas similares, y aguas minerales o termales con colorante, sabor o edulcorantes.</span>
+                                <ul class="tax-examples">
+                                    <li>Energizantes — Red Bull, Monster, Speed</li>
+                                    <li>Hipertónicas / isotónicas — Gatorade, Powerade</li>
+                                    <li>Jarabes — Rose's Grenadine, Monin, Giffard</li>
+                                    <li>Gaseosas — Coca-Cola, Fanta, Sprite, Pap, Bilz, Kem</li>
+                                    <li>Aguas saborizadas — Cachantún con limón, Norma con frutilla</li>
+                                    <li>Néctares — Watt's, Daily</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="tax-card">
+                            <div class="tax-rate warn">18%</div>
+                            <div class="tax-info">
+                                <strong>Altas en azúcar</strong>
+                                <span>Mismo tipo de bebidas analcohólicas pero con más de 6,25 g de azúcar por cada 100 ml (art. 5° Ley N°20.606).</span>
+                                <ul class="tax-examples">
+                                    <li>Gaseosas con alta carga de azúcar (Coca-Cola, Pap)</li>
+                                    <li>Néctares densos — Watt's frutilla, Daily durazno</li>
+                                    <li>Jarabes concentrados — listos para diluir</li>
+                                    <li>Energizantes grandes — formulaciones azucaradas</li>
+                                </ul>
+                                <span class="tax-note">Aplica si superan 6,25 g de azúcar por cada 100 ml (proporción equivalente a 15 g por 240 ml, Ley N°20.606).</span>
+                            </div>
+                        </div>
+                        <div class="tax-card">
+                            <div class="tax-rate">20,5%</div>
+                            <div class="tax-info">
+                                <strong>Vinos, cervezas y similares</strong>
+                                <span>Bebidas alcohólicas fermentadas destinadas al consumo.</span>
+                                <ul class="tax-examples">
+                                    <li>Vinos — Concha y Toro, Santa Rita, Casillero del Diablo</li>
+                                    <li>Vinos espumosos — Chandon, Cono Sur Bicentenario</li>
+                                    <li>Cervezas — Kunstmann, Calaf, Austral, Kross, Royal Guard</li>
+                                    <li>Sidras — Capel, Mistic</li>
+                                    <li>Chichas — artesanales de uva (zona central) y de manzana (sur/Araucanía/Chiloé)</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="tax-card">
+                            <div class="tax-rate danger">31,5%</div>
+                            <div class="tax-info">
+                                <strong>Licores y destilados</strong>
+                                <span>Destilados y licorosos con alto grado de alcohol.</span>
+                                <ul class="tax-examples">
+                                    <li>Pisco — Alto del Carmen, Mistral, Capel, Mal Paso, Republicano</li>
+                                    <li>Whisky — Johnnie Walker, Chivas Regal, Old Smuggler</li>
+                                    <li>Ron — Havana Club, Bacardí</li>
+                                    <li>Aguardiente — artesanales del norte</li>
+                                    <li>Licores — Amaretto Genovese, Triple Sec, Chartreuse</li>
+                                    <li>Vermouth — Martini, Cinzano</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="modal-note">El impuesto se aplica sobre la misma base imponible del IVA y se declara en el Formulario 29 del SII.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Calculadora de Costos Supermercado Chile — IVA 19% — Impuestos vigentes 2026</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
