@@ -658,8 +658,8 @@ main {
 }
 
 .modal-large {
-    max-width: 900px;
-    width: 95%;
+    max-width: 1800px;
+    width: calc(100% - 64px);
 }
 
 .modal-header {
@@ -751,7 +751,7 @@ main {
 
 .tax-cards {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 14px;
     margin-bottom: 16px;
 }
@@ -920,6 +920,12 @@ footer p {
 }
 
 /* Responsive: vertical on small screens */
+@media (max-width: 1280px) {
+    .tax-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 1024px) {
     main {
         grid-template-columns: 1fr;
@@ -960,15 +966,15 @@ footer p {
 
     .modal-large {
         max-width: 100%;
-        width: 100%;
-    }
-
-    .tax-cards {
-        grid-template-columns: 1fr;
+        width: 95%;
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+    .tax-cards {
+        grid-template-columns: 1fr;
+    }
+
     .summary-grid {
         grid-template-columns: 1fr;
     }
