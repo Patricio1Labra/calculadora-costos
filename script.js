@@ -6,6 +6,7 @@ const TAX_RATES = {
     alto_azucar: 0.18,
     vinos_cervezas: 0.205,
     licores: 0.315,
+    carne: 0.042,
     custom: null
 };
 
@@ -15,6 +16,7 @@ const TAX_LABELS = {
     alto_azucar: 'Bebidas altas en azúcar (18%)',
     vinos_cervezas: 'Vinos/Cervezas (20,5%)',
     licores: 'Licores/Destilados (31,5%)',
+    carne: 'Carne (4,2%)',
     custom: 'Impuesto personalizado'
 };
 
@@ -231,8 +233,8 @@ function resetResults() {
     elements.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.textContent = '$0';
-            currentValues[id] = '$0';
+            el.textContent = '$0,00';
+            currentValues[id] = '$0,00';
         }
     });
 
@@ -251,14 +253,14 @@ function resetResults() {
     boldElements.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            el.innerHTML = '<strong>$0</strong>';
-            currentValues[id] = '$0';
+            el.innerHTML = '<strong>$0,00</strong>';
+            currentValues[id] = '$0,00';
         }
     });
 }
 
 function formatCLP(value) {
-    return '$' + Math.round(value).toLocaleString('es-CL');
+    return '$' + value.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 // Add input validation visual feedback
