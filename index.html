@@ -57,10 +57,10 @@
 
                         <div class="form-group">
                             <label class="label-with-help">
-                                Impuesto adicional (ILA)
-                                <button type="button" class="help-btn" id="ilaHelpBtn" title="¿Qué es el ILA?" aria-label="Información sobre el impuesto ILA" aria-describedby="ilaHelpDesc">?</button>
+                                Impuesto adicional
+                                <button type="button" class="help-btn" id="ilaHelpBtn" title="¿Qué impuestos son?" aria-label="Información sobre impuestos adicionales" aria-describedby="ilaHelpDesc">?</button>
                             </label>
-                            <span id="ilaHelpDesc" class="sr-only">Abre un panel con información detallada sobre los impuestos ILA</span>
+                            <span id="ilaHelpDesc" class="sr-only">Abre un panel con información detallada sobre impuestos adicionales</span>
                             <select id="taxType">
                                 <option value="none">Ninguno</option>
                                 <option value="analcoholicas">Bebidas analcohólicas / energizantes (10%)</option>
@@ -168,7 +168,7 @@
                 <div class="modal-header">
                     <div class="modal-title-group">
                         <span class="modal-icon">🏛️</span>
-                        <h3 id="modalTitle">Impuesto ILA — Guía Completa</h3>
+                        <h3 id="modalTitle">Impuestos adicionales — Guía Completa</h3>
                     </div>
                     <button type="button" class="modal-close" id="ilaModalClose" aria-label="Cerrar información de impuestos">&times;</button>
                 </div>
@@ -329,6 +329,37 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="tax-card" data-tax="4.2">
+                            <div class="tax-card-header">
+                                <div class="tax-rate-badge">4,2%</div>
+                                <div class="tax-card-title">
+                                    <span class="tax-emoji">🥩</span>
+                                    <strong>Carne — Retención</strong>
+                                </div>
+                            </div>
+                            <div class="tax-card-body">
+                                <p class="tax-description">No es ILA propiamente tal: es una retención de impuesto a la venta de carne. Se calcula sobre neto + flete.</p>
+                                <div class="tax-examples-grid">
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🥩</span>
+                                        <span>Vacuno</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🥓</span>
+                                        <span>Cerdo</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍗</span>
+                                        <span>Pollo y pavo</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍖</span>
+                                        <span>Cordero y otras carnes</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="modal-footer-note">
@@ -344,6 +375,6 @@
         </footer>
     </div>
 
-    <script src="script.js?v=14"></script>
+    <script src="script.js?v=15"></script>
 </body>
 </html>
