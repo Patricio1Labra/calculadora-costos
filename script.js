@@ -16,7 +16,7 @@ const TAX_LABELS = {
     alto_azucar: 'Bebidas altas en azúcar (18%)',
     vinos_cervezas: 'Vinos/Cervezas (20,5%)',
     licores: 'Licores/Destilados (31,5%)',
-    carne: 'Carne (4,2%)',
+    carne: 'Carne (5% SII, aplica 4,2%)',
     custom: 'Impuesto personalizado'
 };
 
