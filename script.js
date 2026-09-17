@@ -20,8 +20,38 @@ const TAX_LABELS = {
     custom: 'Impuesto personalizado'
 };
 
+const UNIT_LABELS = {
+    unidades: { singular: 'Unidad', plural: 'Unidades', lower: 'unidad' },
+    gramos: { singular: 'Gramo', plural: 'Gramos', lower: 'gramo' },
+    kilos: { singular: 'Kilo', plural: 'Kilos', lower: 'kilo' }
+};
+
+function getUnitLabels() {
+    const unitType = (document.getElementById('unitType') || {}).value || 'unidades';
+    return UNIT_LABELS[unitType] || UNIT_LABELS.unidades;
+}
+
+function updateUnitLabels() {
+    const u = getUnitLabels();
+    const customMargin = parseFloat((document.getElementById('marginPercentage') || {}).value) || 0;
+    const set = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    };
+    set('lblTotalUnits', `Total ${u.plural}`);
+    set('lblCostBaseCard', `Costo base / ${u.singular}`);
+    set('lblCostTotalCard', `Costo + ILA / ${u.singular}`);
+    set('lblSaleUnitTitle', u.lower);
+    if (customMargin > 0) {
+        set('lblCustomMargin', `Margen ${customMargin}%`);
+    } else {
+        set('lblCustomMargin', 'Margen personalizado');
+    }
+}
+
 const form = document.getElementById('calculatorForm');
 const taxType = document.getElementById('taxType');
+const unitType = document.getElementById('unitType');
 const customTaxGroup = document.getElementById('customTaxGroup');
 const ilaHelpBtn = document.getElementById('ilaHelpBtn');
 const ilaModal = document.getElementById('ilaModal');
@@ -65,6 +95,13 @@ taxType.addEventListener('change', () => {
     calculate();
 });
 
+if (unitType) {
+    unitType.addEventListener('change', () => {
+        updateUnitLabels();
+        calculate();
+    });
+}
+
 ilaHelpBtn.addEventListener('click', () => {
     ilaModal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -104,7 +141,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
     calculate();
 
     // Focus first input after reset
-    document.getElementById('productsPerBox').focus();
+    document.getElementById('totalBoxes').focus();
 });
 
 // Animated value setter with smooth transition
@@ -121,8 +158,13 @@ function animateValue(elementId, newValue, isFormatted = true) {
     void element.offsetWidth; // Trigger reflow
     element.classList.add('animating');
 
-    // Update value
-    element.textContent = targetText;
+    // Update value, preserving <strong> if present
+    const strong = element.querySelector('strong');
+    if (strong) {
+        strong.textContent = targetText;
+    } else {
+        element.textContent = targetText;
+    }
 
     // Remove animation class after it completes
     setTimeout(() => {
@@ -133,6 +175,7 @@ function animateValue(elementId, newValue, isFormatted = true) {
 }
 
 function calculate() {
+    updateUnitLabels();
     const productsPerBox = parseFloat(document.getElementById('productsPerBox').value) || 0;
     const totalBoxes = parseFloat(document.getElementById('totalBoxes').value) || 0;
     const basePrice = parseFloat(document.getElementById('basePrice').value) || 0;
@@ -155,79 +198,77 @@ function calculate() {
         taxRate = customTaxPercent / 100;
     }
 
-    let costPerBox, ivaPerUnit;
+    // El precio base es el TOTAL (neto o con IVA) por todas las unidades,
+    // sean 1 o 20 cajas: totalUnidades = productosPorCaja * totalCajas
+    let ivaPerUnit;
+    let costPerUnitBase;
 
     if (priceIncludesIva) {
-        costPerBox = basePrice;
-        ivaPerUnit = (basePrice / productsPerBox) * (IVA_RATE / (1 + IVA_RATE));
+        const totalWithIvaPerUnit = basePrice / totalUnits;
+        ivaPerUnit = totalWithIvaPerUnit * (IVA_RATE / (1 + IVA_RATE));
+        costPerUnitBase = totalWithIvaPerUnit * (1 / (1 + IVA_RATE));
     } else {
-        costPerBox = basePrice * (1 + IVA_RATE);
-        ivaPerUnit = (basePrice / productsPerBox) * IVA_RATE;
+        costPerUnitBase = basePrice / totalUnits;
+        ivaPerUnit = costPerUnitBase * IVA_RATE;
     }
 
-    const costPerUnitBase = priceIncludesIva
-        ? (basePrice / productsPerBox) * (1 / (1 + IVA_RATE))
-        : basePrice / productsPerBox;
-
-    const costWithoutIva = costPerUnitBase;
-    const taxPerUnit = costWithoutIva * taxRate;
     const transportPerBox = totalBoxesInFreight > 0 ? transportCost / totalBoxesInFreight : 0;
     const transportPerUnit = productsPerBox > 0 ? transportPerBox / productsPerBox : 0;
 
-    const totalCostPerUnit = costPerUnitBase + ivaPerUnit + taxPerUnit + transportPerUnit;
-    const profitPerUnit = totalCostPerUnit * (marginPercentage / 100);
-    const salePricePerUnit = totalCostPerUnit + profitPerUnit;
+    const costBaseConFlete = costPerUnitBase + transportPerUnit;
+    // ILA sobre neto + flete
+    const taxPerUnit = costBaseConFlete * taxRate;
+    // Costo + ILA sin IVA: base + flete + ILA solamente
+    const totalCostPerUnit = costBaseConFlete + taxPerUnit;
 
-    const totalSaleValue = salePricePerUnit * totalUnits;
-    const totalCostValue = totalCostPerUnit * totalUnits;
-    const totalProfit = totalSaleValue - totalCostValue;
+    const sale30 = totalCostPerUnit * 1.30;
+    const sale35 = totalCostPerUnit * 1.35;
+    const sale40 = totalCostPerUnit * 1.40;
 
-    // Animate summary values
-    animateValue('costPerUnit', totalCostPerUnit);
-    animateValue('salePricePerUnit', salePricePerUnit);
+    // Solo lo necesario en el lado derecho (costos con decimales)
     animateValue('totalUnits', totalUnits, false);
-    animateValue('profitPerUnit', profitPerUnit);
+    animateValue('costPerUnitDetail', costBaseConFlete);
+    animateValue('costPerUnitTotal', totalCostPerUnit);
 
-    // Animate detail values
-    animateValue('costPerBox', costPerBox);
-    animateValue('costPerUnitDetail', costPerUnitBase);
-    animateValue('ivaPerUnit', ivaPerUnit);
-
-    const taxRow = document.getElementById('taxRow');
-    if (taxTypeValue !== 'none' && taxRate > 0) {
-        taxRow.style.display = 'table-row';
-        document.getElementById('taxLabel').textContent = TAX_LABELS[taxTypeValue] + ' / unidad';
-        animateValue('taxPerUnit', taxPerUnit);
-    } else {
-        taxRow.style.display = 'none';
+    // Ventas sin decimales, terminación 00/50/90 al más cercano.
+    // Si chocan, se baja el menor. Se muestra el % real resultante.
+    const tiers = [
+        { rowId: 'row30', priceId: 'sale30', realId: 'sale30real', swapId: 'swap30', margin: 30, exact: sale30 },
+        { rowId: 'row35', priceId: 'sale35', realId: 'sale35real', swapId: 'swap35', margin: 35, exact: sale35 },
+        { rowId: 'row40', priceId: 'sale40', realId: 'sale40real', swapId: 'swap40', margin: 40, exact: sale40 }
+    ];
+    if (marginPercentage > 0) {
+        tiers.push({ rowId: 'customMarginRow', priceId: 'saleCustom', realId: 'saleCustomReal', swapId: 'swapCustom', margin: marginPercentage, exact: totalCostPerUnit * (1 + marginPercentage / 100) });
+    }
+    const byDesc = [...tiers].sort((a, b) => b.exact - a.exact);
+    let nextRounded = Infinity;
+    for (const t of byDesc) {
+        let r = commercialRoundNearest(t.exact);
+        let guard = 0;
+        while (r >= nextRounded && guard++ < 20) {
+            r = prevCommercial(nextRounded);
+            if (r <= 0) { r = 0; break; }
+        }
+        t.rounded = r;
+        nextRounded = r;
+    }
+    for (const t of tiers) {
+        setSalePrice(t, t.rounded, totalCostPerUnit);
     }
 
-    animateValue('transportPerUnit', transportPerUnit);
-    animateValue('costPerUnitTotal', totalCostPerUnit);
-    animateValue('totalUnitsSummary', totalUnits, false);
-    animateValue('salePriceSummary', salePricePerUnit);
-    animateValue('totalSaleValue', totalSaleValue);
-    animateValue('totalCostValue', totalCostValue);
-    animateValue('totalProfit', totalProfit);
-
-    // Update profit color based on positive/negative
-    const profitElement = document.getElementById('profitPerUnit');
-    const totalProfitElement = document.getElementById('totalProfit');
-
-    if (profitPerUnit < 0) {
-        profitElement.style.color = '#dc2626';
-        totalProfitElement.style.color = '#dc2626';
+    const customRow = document.getElementById('customMarginRow');
+    if (marginPercentage > 0) {
+        if (customRow) customRow.style.display = 'flex';
+        document.getElementById('lblCustomMargin').textContent = `Margen ${marginPercentage}%`;
     } else {
-        profitElement.style.color = '';
-        totalProfitElement.style.color = '';
+        if (customRow) customRow.style.display = 'none';
     }
 }
 
 function resetResults() {
+    updateUnitLabels();
     const elements = [
-        'costPerUnit', 'salePricePerUnit', 'profitPerUnit',
-        'costPerBox', 'costPerUnitDetail', 'ivaPerUnit',
-        'transportPerUnit', 'salePriceSummary', 'totalCostValue'
+        'costPerUnitDetail', 'costPerUnitTotal'
     ];
 
     elements.forEach(id => {
@@ -238,7 +279,27 @@ function resetResults() {
         }
     });
 
-    const countElements = ['totalUnits', 'totalUnitsSummary'];
+    ['sale30', 'sale35', 'sale40', 'saleCustom'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.textContent = '$0';
+            currentValues[id] = '$0';
+        }
+    });
+    ['sale30real', 'sale35real', 'sale40real', 'saleCustomReal'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '';
+    });
+    ['tip30', 'tip35', 'tip40', 'tipCustom', 'swap30', 'swap35', 'swap40', 'swapCustom'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '';
+    });
+    ['row30', 'row35', 'row40', 'customMarginRow'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.setProperty('--cost-pct', '100%');
+    });
+
+    const countElements = ['totalUnits'];
     countElements.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
@@ -247,20 +308,82 @@ function resetResults() {
         }
     });
 
-    document.getElementById('taxRow').style.display = 'none';
-
-    const boldElements = ['costPerUnitTotal', 'totalSaleValue', 'totalProfit'];
-    boldElements.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.innerHTML = '<strong>$0,00</strong>';
-            currentValues[id] = '$0,00';
-        }
-    });
+    const customRow = document.getElementById('customMarginRow');
+    if (customRow) customRow.style.display = 'none';
 }
 
 function formatCLP(value) {
     return '$' + value.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function formatCLPInt(value) {
+    return '$' + Math.round(value).toLocaleString('es-CL', { maximumFractionDigits: 0 });
+}
+
+function formatPct1(value) {
+    return value.toLocaleString('es-CL', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '% real';
+}
+
+// Precios comerciales: terminaciones 00 / 50 / 90.
+// >= 100: sobre centenas (…00, …50, …90). < 100: sobre unidades (…0, …5, …9).
+function commercialCandidates(n) {
+    n = Math.round(n);
+    if (n < 100) {
+        const base = Math.floor(n / 10) * 10;
+        return [base - 10, base, base + 5, base + 9, base + 10].filter(v => v >= 0);
+    }
+    const base = Math.floor(n / 100) * 100;
+    return [base - 100, base - 50, base - 10, base, base + 50, base + 90, base + 100].filter(v => v >= 0);
+}
+
+function commercialRoundNearest(exact) {
+    const n = Math.round(exact);
+    const cands = commercialCandidates(n);
+    let best = cands[0];
+    let bestDist = Math.abs(n - best);
+    for (const c of cands) {
+        const d = Math.abs(n - c);
+        if (d < bestDist || (d === bestDist && c > best)) {
+            best = c;
+            bestDist = d;
+        }
+    }
+    return best;
+}
+
+function prevCommercial(below) {
+    const cands = commercialCandidates(Math.round(below) - 1);
+    const valid = cands.filter(v => v < below);
+    return valid.length ? Math.max(...valid) : 0;
+}
+
+function setSalePrice(tier, rounded, costBase) {
+    const el = document.getElementById(tier.priceId);
+    if (el) {
+        const txt = formatCLPInt(rounded);
+        el.classList.remove('animating');
+        void el.offsetWidth;
+        el.classList.add('animating');
+        el.textContent = txt;
+        currentValues[tier.priceId] = txt;
+        setTimeout(() => el.classList.remove('animating'), 300);
+    }
+    const realEl = document.getElementById(tier.realId);
+    if (realEl && costBase > 0) {
+        realEl.textContent = formatPct1((rounded - costBase) / costBase * 100);
+    } else if (realEl) {
+        realEl.textContent = '';
+    }
+    const row = document.getElementById(tier.rowId);
+    if (row && rounded > 0) {
+        const costPct = Math.max(0, Math.min(100, costBase / rounded * 100));
+        row.style.setProperty('--cost-pct', costPct.toFixed(1) + '%');
+    }
+    const tip = document.getElementById(tier.swapId);
+    if (tip) {
+        const gain = rounded - costBase;
+        tip.innerHTML = `<span class="swap-cost">Costo ${formatCLP(costBase)}</span><span class="swap-profit">Ganancia ${formatCLP(gain)}</span>`;
+    }
 }
 
 // Add input validation visual feedback
@@ -296,6 +419,54 @@ document.addEventListener('keydown', (e) => {
         }
     }
 });
+
+// Carrusel Datos <-> Resultados (solo visible en vertical <=1024px)
+(function initCarousel() {
+    const main = document.querySelector('main');
+    const prev = document.getElementById('carouselPrev');
+    const next = document.getElementById('carouselNext');
+    const dotDatos = document.getElementById('dotDatos');
+    const dotResultados = document.getElementById('dotResultados');
+    if (!main || !prev || !next) return;
+
+    const panels = () => Array.from(main.querySelectorAll(':scope > .card, :scope > .results-wrapper'));
+
+    function currentIndex() {
+        const list = panels();
+        if (!list.length) return 0;
+        const x = main.scrollLeft + main.clientWidth / 2;
+        let best = 0;
+        let bestDist = Infinity;
+        list.forEach((p, i) => {
+            const cx = p.offsetLeft + p.offsetWidth / 2;
+            const d = Math.abs(cx - x);
+            if (d < bestDist) { bestDist = d; best = i; }
+        });
+        return best;
+    }
+
+    function goTo(i) {
+        const list = panels();
+        if (!list.length) return;
+        i = Math.max(0, Math.min(list.length - 1, i));
+        main.scrollTo({ left: list[i].offsetLeft - main.offsetLeft, behavior: 'smooth' });
+    }
+
+    function sync() {
+        const i = currentIndex();
+        const last = panels().length - 1;
+        if (dotDatos) dotDatos.classList.toggle('active', i === 0);
+        if (dotResultados) dotResultados.classList.toggle('active', i === last);
+        prev.disabled = i === 0;
+        next.disabled = i === last;
+    }
+
+    prev.addEventListener('click', () => goTo(currentIndex() - 1));
+    next.addEventListener('click', () => goTo(currentIndex() + 1));
+    main.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    window.addEventListener('resize', sync);
+    sync();
+})();
 
 // Add ripple effect to buttons
 document.querySelectorAll('button').forEach(button => {

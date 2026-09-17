@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Costos - Supermercado Chile</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📦</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📦 Calculadora de Costos y Ventas</h1>
+            <h1><span class="h1-emoji">📦</span> <span class="h1-text">Calculadora de Costos y Ventas</span></h1>
             <p class="subtitle">Supermercado Chile — cálculo en tiempo real</p>
         </header>
 
@@ -22,18 +23,28 @@
                 <form id="calculatorForm" autocomplete="off" aria-label="Calculadora de costos y ventas">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="productsPerBox">Productos por caja</label>
-                            <input type="number" id="productsPerBox" min="1" required placeholder="Ej: 12">
-                        </div>
-
-                        <div class="form-group">
                             <label for="totalBoxes">Cantidad de cajas</label>
                             <input type="number" id="totalBoxes" min="1" required placeholder="Ej: 5">
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="productsPerBox">Cantidad por caja</label>
+                                <input type="number" id="productsPerBox" min="0.01" step="0.01" required placeholder="Ej: 12 o 1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="unitType">Unidad de medida</label>
+                                <select id="unitType" required>
+                                    <option value="unidades">Unidades</option>
+                                    <option value="gramos">Gramos (g)</option>
+                                    <option value="kilos">Kilos (kg)</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label for="basePrice">Precio base ($)</label>
-                            <input type="number" id="basePrice" min="0" step="0.01" required placeholder="Ej: 15000">
+                            <label for="basePrice">Precio total ($) — neto o con IVA según opción</label>
+                            <input type="number" id="basePrice" min="0" step="0.01" required placeholder="Ej: 15000 por las 60 unidades">
                         </div>
 
                         <div class="form-group">
@@ -78,8 +89,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="marginPercentage">Margen de ganancia (%)</label>
-                            <input type="number" id="marginPercentage" min="0" max="1000" step="0.1" required placeholder="Ej: 30">
+                            <label for="marginPercentage">Margen personalizado (%) — opcional</label>
+                            <input type="number" id="marginPercentage" min="0" max="1000" step="0.1" placeholder="Ej: 25">
                         </div>
                     </div>
 
@@ -93,85 +104,64 @@
                 <section class="card results-section" aria-live="polite" aria-atomic="true">
                     <h2>📊 Resultados</h2>
 
-                    <div class="summary-grid">
-                        <div class="summary-card primary">
-                            <span class="summary-label">Costo por Unidad</span>
-                            <span class="summary-value" id="costPerUnit">$0,00</span>
-                        </div>
-                        <div class="summary-card accent">
-                            <span class="summary-label">Precio de Venta / Unidad</span>
-                            <span class="summary-value" id="salePricePerUnit">$0,00</span>
-                        </div>
+                    <div class="summary-grid simplified">
                         <div class="summary-card">
-                            <span class="summary-label">Total Unidades</span>
+                            <span class="summary-label" id="lblTotalUnits">Total Unidades</span>
                             <span class="summary-value" id="totalUnits">0</span>
                         </div>
-                        <div class="summary-card profit-card">
-                            <span class="summary-label">Ganancia / Unidad</span>
-                            <span class="summary-value profit" id="profitPerUnit">$0,00</span>
+                        <div class="summary-card primary">
+                            <span class="summary-label" id="lblCostBaseCard">Costo base / Unidad</span>
+                            <span class="summary-value" id="costPerUnitDetail">$0,00</span>
+                        </div>
+                        <div class="summary-card accent">
+                            <span class="summary-label" id="lblCostTotalCard">Costo + ILA / Unidad</span>
+                            <span class="summary-value" id="costPerUnitTotal">$0,00</span>
                         </div>
                     </div>
 
                     <div class="details-grid">
-                        <div class="detail-card">
-                            <h3>💰 Desglose de Costos por Unidad</h3>
-                            <table class="detail-table">
-                                <tr>
-                                    <td>Costo por caja</td>
-                                    <td id="costPerBox">$0,00</td>
-                                </tr>
-                                <tr>
-                                    <td>Costo unitario (base)</td>
-                                    <td id="costPerUnitDetail">$0,00</td>
-                                </tr>
-                                <tr>
-                                    <td>IVA (19%)</td>
-                                    <td id="ivaPerUnit">$0,00</td>
-                                </tr>
-                                <tr class="tax-row" id="taxRow" style="display: none;">
-                                    <td id="taxLabel">Impuesto adicional</td>
-                                    <td id="taxPerUnit">$0,00</td>
-                                </tr>
-                                <tr>
-                                    <td>Transporte / unidad</td>
-                                    <td id="transportPerUnit">$0,00</td>
-                                </tr>
-                                <tr class="total-row">
-                                    <td><strong>Costo total / unidad</strong></td>
-                                    <td id="costPerUnitTotal"><strong>$0,00</strong></td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <div class="detail-card">
-                            <h3>📈 Resumen de Venta</h3>
-                            <table class="detail-table">
-                                <tr>
-                                    <td>Unidades totales</td>
-                                    <td id="totalUnitsSummary">0</td>
-                                </tr>
-                                <tr>
-                                    <td>Precio venta / unidad</td>
-                                    <td id="salePriceSummary">$0,00</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Venta total</strong></td>
-                                    <td id="totalSaleValue"><strong>$0,00</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>Costo total inventario</td>
-                                    <td id="totalCostValue">$0,00</td>
-                                </tr>
-                                <tr class="profit-row">
-                                    <td><strong>Ganancia total</strong></td>
-                                    <td id="totalProfit"><strong>$0,00</strong></td>
-                                </tr>
-                            </table>
+                        <div class="detail-card sale-card">
+                            <h3>📈 Precio de venta por <span id="lblSaleUnitTitle">unidad</span></h3>
+                            <div class="sale-list">
+                                <div class="sale-tier tier-30" id="row30">
+                                    <span class="tier-fill" aria-hidden="true"></span>
+                                    <span class="margin-badge m30">Margen 30%</span>
+                                    <span class="sale-cell"><span class="sale-price" id="sale30">$0</span><span class="sale-real" id="sale30real"></span></span>
+                                    <span class="tier-swap" id="swap30" aria-hidden="true"></span>
+                                </div>
+                                <div class="sale-tier tier-35" id="row35">
+                                    <span class="tier-fill" aria-hidden="true"></span>
+                                    <span class="margin-badge m35">Margen 35%</span>
+                                    <span class="sale-cell"><span class="sale-price" id="sale35">$0</span><span class="sale-real" id="sale35real"></span></span>
+                                    <span class="tier-swap" id="swap35" aria-hidden="true"></span>
+                                </div>
+                                <div class="sale-tier tier-40" id="row40">
+                                    <span class="tier-fill" aria-hidden="true"></span>
+                                    <span class="margin-badge m40">Margen 40%</span>
+                                    <span class="sale-cell"><span class="sale-price" id="sale40">$0</span><span class="sale-real" id="sale40real"></span></span>
+                                    <span class="tier-swap" id="swap40" aria-hidden="true"></span>
+                                </div>
+                                <div class="sale-tier tier-custom" id="customMarginRow" style="display: none;">
+                                    <span class="tier-fill" aria-hidden="true"></span>
+                                    <strong id="lblCustomMargin" class="margin-badge mCustom">Margen personalizado</strong>
+                                    <span class="sale-cell"><span class="sale-price" id="saleCustom">$0</span><span class="sale-real" id="saleCustomReal"></span></span>
+                                    <span class="tier-swap" id="swapCustom" aria-hidden="true"></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
             </div>
         </main>
+
+        <nav class="carousel-nav" aria-label="Cambiar entre Datos y Resultados">
+            <button type="button" class="carousel-btn" id="carouselPrev" aria-label="Ver Datos del Producto">← Datos</button>
+            <span class="carousel-dots" aria-hidden="true">
+                <span class="carousel-dot active" id="dotDatos"></span>
+                <span class="carousel-dot" id="dotResultados"></span>
+            </span>
+            <button type="button" class="carousel-btn" id="carouselNext" aria-label="Ver Resultados">Resultados →</button>
+        </nav>
 
         <div class="modal-overlay" id="ilaModal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
             <div class="modal modal-large">
@@ -354,6 +344,6 @@
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=14"></script>
 </body>
 </html>
