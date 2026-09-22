@@ -2,20 +2,24 @@ const IVA_RATE = 0.19;
 
 const TAX_RATES = {
     none: 0,
-    analcoholicas: 0.10,
-    alto_azucar: 0.18,
-    vinos_cervezas: 0.205,
-    licores: 0.315,
+    analcoholicas: 0.084,
+    harina: 0.10,
+    alto_azucar: 0.15,
+    vinos_cervezas: 0.17,
+    licores_26: 0.26,
+    licores_27: 0.27,
     carne: 0.042,
     custom: null
 };
 
 const TAX_LABELS = {
     none: '',
-    analcoholicas: 'Bebidas analcohólicas (10%)',
-    alto_azucar: 'Bebidas altas en azúcar (18%)',
-    vinos_cervezas: 'Vinos/Cervezas (20,5%)',
-    licores: 'Licores/Destilados (31,5%)',
+    analcoholicas: 'Bebidas analcohólicas (10% SII, aplica 8,4%)',
+    harina: 'Harina (10%)',
+    alto_azucar: 'Bebidas altas en azúcar (18% SII, aplica 15%)',
+    vinos_cervezas: 'Vinos/Cervezas (20,5% SII, aplica 17%)',
+    licores_26: 'Licores/Destilados (31,5% SII, aplica 26%)',
+    licores_27: 'Licores/Destilados (31,5% SII, aplica 27%)',
     carne: 'Carne (5% SII, aplica 4,2%)',
     custom: 'Impuesto personalizado'
 };

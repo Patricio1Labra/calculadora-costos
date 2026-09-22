@@ -63,10 +63,12 @@
                             <span id="ilaHelpDesc" class="sr-only">Abre un panel con información detallada sobre impuestos adicionales</span>
                             <select id="taxType">
                                 <option value="none">Ninguno</option>
-                                <option value="analcoholicas">Bebidas analcohólicas / energizantes (10%)</option>
-                                <option value="alto_azucar">Bebidas altas en azúcar (18%)</option>
-                                <option value="vinos_cervezas">Vinos, cervezas, sidras (20,5%)</option>
-                                <option value="licores">Licores, destilados, whisky (31,5%)</option>
+                                <option value="analcoholicas">Bebidas analcohólicas (10%, aplica 8,4%)</option>
+                                <option value="harina">Harina (10%)</option>
+                                <option value="alto_azucar">Bebidas altas en azúcar (18%, aplica 15%)</option>
+                                <option value="vinos_cervezas">Vinos, cervezas, sidras (20,5%, aplica 17%)</option>
+                                <option value="licores_26">Licores, destilados (31,5%, aplica 26%)</option>
+                                <option value="licores_27">Licores, destilados (31,5%, aplica 27%)</option>
                                 <option value="carne">Carne (5% SII, aplica 4,2%)</option>
                                 <option value="custom">Otro (especificar %)</option>
                             </select>
@@ -182,7 +184,7 @@
                     </div>
 
                     <div class="tax-cards">
-                        <div class="tax-card" data-tax="10">
+                        <div class="tax-card" data-tax="8.4">
                             <div class="tax-card-header">
                                 <div class="tax-rate-badge">10%</div>
                                 <div class="tax-card-title">
@@ -191,7 +193,7 @@
                                 </div>
                             </div>
                             <div class="tax-card-body">
-                                <p class="tax-description">Naturales o artificiales, energizantes o hipertónicas, jarabes y en general cualquier otro producto que las sustituya o que sirva para preparar bebidas similares.</p>
+                                <p class="tax-description">Naturales o artificiales, energizantes o hipertónicas, jarabes y en general cualquier otro producto que las sustituya o que sirva para preparar bebidas similares. Tasa legal 10%. En factura cuadra con 8,4% sobre el neto, que es lo que usa la calculadora.</p>
                                 <div class="tax-examples-grid">
                                     <div class="tax-example-item">
                                         <span class="example-icon">⚡</span>
@@ -221,7 +223,30 @@
                             </div>
                         </div>
 
-                        <div class="tax-card" data-tax="18">
+                        <div class="tax-card" data-tax="10">
+                            <div class="tax-card-header">
+                                <div class="tax-rate-badge">10%</div>
+                                <div class="tax-card-title">
+                                    <span class="tax-emoji">🌾</span>
+                                    <strong>Harina</strong>
+                                </div>
+                            </div>
+                            <div class="tax-card-body">
+                                <p class="tax-description">Impuesto aplicado a la harina según factura de compra (10% sobre el neto).</p>
+                                <div class="tax-examples-grid">
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🌾</span>
+                                        <span>Harina de trigo — panificación</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍞</span>
+                                        <span>Premezclas y harinas preparadas</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tax-card" data-tax="15">
                             <div class="tax-card-header">
                                 <div class="tax-rate-badge warn">18%</div>
                                 <div class="tax-card-title">
@@ -230,7 +255,7 @@
                                 </div>
                             </div>
                             <div class="tax-card-body">
-                                <p class="tax-description">Mismo tipo de bebidas analcohólicas pero con más de 6,25 g de azúcar por cada 100 ml (art. 5° Ley N°20.606).</p>
+                                <p class="tax-description">Mismo tipo de bebidas analcohólicas pero con más de 6,25 g de azúcar por cada 100 ml (art. 5° Ley N°20.606). Tasa legal 18%. En factura cuadra con 15% sobre el neto, que es lo que usa la calculadora.</p>
                                 <div class="tax-examples-grid">
                                     <div class="tax-example-item">
                                         <span class="example-icon">🥤</span>
@@ -256,7 +281,7 @@
                             </div>
                         </div>
 
-                        <div class="tax-card" data-tax="20.5">
+                        <div class="tax-card" data-tax="17">
                             <div class="tax-card-header">
                                 <div class="tax-rate-badge">20,5%</div>
                                 <div class="tax-card-title">
@@ -265,7 +290,7 @@
                                 </div>
                             </div>
                             <div class="tax-card-body">
-                                <p class="tax-description">Bebidas alcohólicas fermentadas destinadas al consumo.</p>
+                                <p class="tax-description">Bebidas alcohólicas fermentadas destinadas al consumo. Tasa legal 20,5%. En factura cuadra con 17% sobre el neto, que es lo que usa la calculadora.</p>
                                 <div class="tax-examples-grid">
                                     <div class="tax-example-item">
                                         <span class="example-icon">🍷</span>
@@ -291,16 +316,16 @@
                             </div>
                         </div>
 
-                        <div class="tax-card" data-tax="31.5">
+                        <div class="tax-card" data-tax="26">
                             <div class="tax-card-header">
                                 <div class="tax-rate-badge danger">31,5%</div>
                                 <div class="tax-card-title">
                                     <span class="tax-emoji">🥃</span>
-                                    <strong>Licores y Destilados</strong>
+                                    <strong>Licores y Destilados (aplica 26%)</strong>
                                 </div>
                             </div>
                             <div class="tax-card-body">
-                                <p class="tax-description">Destilados y licorosos con alto grado de alcohol.</p>
+                                <p class="tax-description">Destilados y licorosos con alto grado de alcohol. Tasa legal 31,5%. En factura cuadra con 26% sobre el neto, que es lo que usa la calculadora.</p>
                                 <div class="tax-examples-grid">
                                     <div class="tax-example-item">
                                         <span class="example-icon">🍾</span>
@@ -315,16 +340,39 @@
                                         <span>Ron — Havana Club, Bacardí</span>
                                     </div>
                                     <div class="tax-example-item">
-                                        <span class="example-icon">🫗</span>
-                                        <span>Aguardiente — artesanales del norte</span>
+                                        <span class="example-icon">🍹</span>
+                                        <span>Licores — Amaretto, Triple Sec</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tax-card" data-tax="27">
+                            <div class="tax-card-header">
+                                <div class="tax-rate-badge danger">31,5%</div>
+                                <div class="tax-card-title">
+                                    <span class="tax-emoji">🥃</span>
+                                    <strong>Licores y Destilados (aplica 27%)</strong>
+                                </div>
+                            </div>
+                            <div class="tax-card-body">
+                                <p class="tax-description">Destilados y licorosos con alto grado de alcohol. Tasa legal 31,5%. En factura cuadra con 27% sobre el neto, que es lo que usa la calculadora.</p>
+                                <div class="tax-examples-grid">
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍾</span>
+                                        <span>Pisco — Capel, Mistral, Republicano</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🥃</span>
+                                        <span>Whisky — Johnnie Walker, Chivas</span>
+                                    </div>
+                                    <div class="tax-example-item">
+                                        <span class="example-icon">🍸</span>
+                                        <span>Ron — Havana Club, Bacardí</span>
                                     </div>
                                     <div class="tax-example-item">
                                         <span class="example-icon">🍹</span>
                                         <span>Licores — Amaretto, Triple Sec</span>
-                                    </div>
-                                    <div class="tax-example-item">
-                                        <span class="example-icon">🍷</span>
-                                        <span>Vermouth — Martini, Cinzano</span>
                                     </div>
                                 </div>
                             </div>
@@ -379,6 +427,6 @@
         </footer>
     </div>
 
-    <script src="script.js?v=15"></script>
+    <script src="script.js?v=17"></script>
 </body>
 </html>
