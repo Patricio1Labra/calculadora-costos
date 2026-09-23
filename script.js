@@ -40,11 +40,31 @@ inputs.forEach(input => {
     // Add focus animations
     input.addEventListener('focus', function() {
         this.parentElement.classList.add('focused');
+        // Seleccionar todo el texto con un solo clic/foco
+        if (this.tagName === 'INPUT' && this.value) {
+            this.select();
+        }
     });
 
     input.addEventListener('blur', function() {
         this.parentElement.classList.remove('focused');
     });
+
+    // Seleccionar contenido al hacer clic (incluso si ya tenía foco)
+    // y evitar que el mouseup deseleccione en Chrome/desktop
+    if (input.tagName === 'INPUT') {
+        input.addEventListener('click', function() {
+            if (this.value) {
+                this.select();
+            }
+        });
+
+        input.addEventListener('mouseup', function(e) {
+            if (document.activeElement === this && this.value) {
+                e.preventDefault();
+            }
+        });
+    }
 });
 
 // Custom select styling
