@@ -169,6 +169,20 @@ taxButtons.forEach(btn => {
         }
         syncTaxButtons();
     });
+
+    // Posiciona el tooltip para que la card (overflow hidden) no lo recorte
+    const placeTip = () => {
+        btn.classList.remove('tip-left', 'tip-right');
+        const card = btn.closest('.card');
+        if (!card) return;
+        const c = card.getBoundingClientRect();
+        const r = btn.getBoundingClientRect();
+        const half = 120; // ~mitad del max-width del tooltip
+        if (r.left - half < c.left) btn.classList.add('tip-left');
+        else if (r.right + half > c.right) btn.classList.add('tip-right');
+    };
+    btn.addEventListener('mouseenter', placeTip);
+    btn.addEventListener('focus', placeTip);
 });
 
 syncTaxButtons();

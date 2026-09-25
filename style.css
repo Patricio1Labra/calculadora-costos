@@ -357,18 +357,21 @@ main {
    Compacta (emoji + tasa); el seleccionado muestra su nombre;
    hover/foco revela el texto completo en un tooltip. */
 .tax-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
 .tax-btn {
     position: relative;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 9px 6px;
+    padding: 6px 8px;
+    min-width: 38px;
+    min-height: 38px;
     border: 2px solid var(--border);
     border-radius: var(--radius-sm);
     background: var(--bg-secondary);
@@ -444,25 +447,26 @@ main {
     transform: translateX(-50%) translateY(0);
 }
 
-/* La card recorta (overflow hidden): alinear tooltips de borde */
-.tax-buttons .tax-btn:nth-child(3n+1)::after {
+/* La card recorta (overflow hidden): estas clases las pone JS en
+   hover/foco según la posición del botón para no recortar el tooltip */
+.tax-buttons .tax-btn.tip-left::after {
     left: 0;
     transform: translateX(0) translateY(4px);
 }
 
-.tax-buttons .tax-btn:nth-child(3n+1):hover::after,
-.tax-buttons .tax-btn:nth-child(3n+1):focus-visible::after {
+.tax-buttons .tax-btn.tip-left:hover::after,
+.tax-buttons .tax-btn.tip-left:focus-visible::after {
     transform: translateX(0) translateY(0);
 }
 
-.tax-buttons .tax-btn:nth-child(3n)::after {
+.tax-buttons .tax-btn.tip-right::after {
     left: auto;
     right: 0;
     transform: translateX(0) translateY(4px);
 }
 
-.tax-buttons .tax-btn:nth-child(3n):hover::after,
-.tax-buttons .tax-btn:nth-child(3n):focus-visible::after {
+.tax-buttons .tax-btn.tip-right:hover::after,
+.tax-buttons .tax-btn.tip-right:focus-visible::after {
     transform: translateX(0) translateY(0);
 }
 
