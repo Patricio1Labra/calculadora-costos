@@ -357,18 +357,19 @@ main {
    Compacta (emoji + tasa); el seleccionado muestra su nombre;
    hover/foco revela el texto completo en un tooltip. */
 .tax-buttons {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, auto));
+    justify-content: start;
     gap: 8px;
 }
 
 .tax-btn {
     position: relative;
-    flex: 0 0 auto;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 2px;
     padding: 6px 8px;
     min-width: 38px;
     min-height: 38px;
@@ -395,14 +396,14 @@ main {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
-.tax-btn .tax-btn-rate,
-.tax-btn .tax-btn-name {
+.tax-btn .tax-btn-text {
     display: none;
+    font-size: 0.72rem;
     font-weight: 600;
     white-space: nowrap;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-width: 0;
 }
 
 .tax-btn.active {
@@ -412,9 +413,8 @@ main {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 0 20px rgba(37, 99, 235, 0.1);
 }
 
-.tax-btn.active .tax-btn-rate,
-.tax-btn.active .tax-btn-name {
-    display: inline;
+.tax-btn.active .tax-btn-text {
+    display: block;
 }
 
 .tax-btn::after {
