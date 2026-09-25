@@ -67,34 +67,64 @@ const inputs = form.querySelectorAll('input, select');
 let currentValues = {};
 let animationFrames = {};
 
+// Los inputs numéricos usan type="text" + inputmode="decimal":
+// type="number" no soporta la Selection API en Chromium
+// (.select() no hace nada), así que seleccionar-con-un-clic
+// solo funciona con inputs de texto. inputmode="decimal"
+// mantiene el teclado numérico en móvil.
+// Acepta coma decimal chilena ("15000,5" -> 15000.5).
+function parseNumber(value) {
+    if (typeof value === 'number') return value || 0;
+    if (typeof value !== 'string') return 0;
+    return parseFloat(value.replace(',', '.')) || 0;
+}
+
+function selectAllText(el) {
+    if (!el || el.tagName !== 'INPUT' || !el.value) return;
+    try {
+        el.select();
+    } catch (_) {
+        try {
+            el.setSelectionRange(0, el.value.length);
+        } catch (_2) {
+            /* input no seleccionable: no hacer nada */
+        }
+    }
+}
+
+// Recuerda si el input ya tenía foco al presionar el botón del mouse:
+// - primer clic (sin foco previo): selecciona todo el texto
+// - clics siguientes (ya enfocado): posicionan el cursor normalmente
+const mouseDownHadFocus = new WeakMap();
+
 inputs.forEach(input => {
     input.addEventListener('input', calculate);
     input.addEventListener('change', calculate);
 
+    input.addEventListener('mousedown', function() {
+        mouseDownHadFocus.set(this, document.activeElement === this);
+    });
+
     // Add focus animations
     input.addEventListener('focus', function() {
         this.parentElement.classList.add('focused');
-        // Seleccionar todo el texto con un solo clic/foco
-        if (this.tagName === 'INPUT' && this.value) {
-            this.select();
+        // Seleccionar todo el texto solo si el foco es nuevo
+        // (teclado/Tab o primer clic); si ya tenía foco, no molestar.
+        if (this.tagName === 'INPUT' && !mouseDownHadFocus.get(this)) {
+            selectAllText(this);
         }
     });
 
     input.addEventListener('blur', function() {
         this.parentElement.classList.remove('focused');
+        mouseDownHadFocus.delete(this);
     });
 
-    // Seleccionar contenido al hacer clic (incluso si ya tenía foco)
-    // y evitar que el mouseup deseleccione en Chrome/desktop
+    // Evita que el mouseup del primer clic deseleccione lo que
+    // se seleccionó en focus (comportamiento estándar en desktop).
     if (input.tagName === 'INPUT') {
-        input.addEventListener('click', function() {
-            if (this.value) {
-                this.select();
-            }
-        });
-
         input.addEventListener('mouseup', function(e) {
-            if (document.activeElement === this && this.value) {
+            if (!mouseDownHadFocus.get(this) && this.value) {
                 e.preventDefault();
             }
         });
@@ -200,15 +230,15 @@ function animateValue(elementId, newValue, isFormatted = true) {
 
 function calculate() {
     updateUnitLabels();
-    const productsPerBox = parseFloat(document.getElementById('productsPerBox').value) || 0;
-    const totalBoxes = parseFloat(document.getElementById('totalBoxes').value) || 0;
-    const basePrice = parseFloat(document.getElementById('basePrice').value) || 0;
+    const productsPerBox = parseNumber(document.getElementById('productsPerBox').value);
+    const totalBoxes = parseNumber(document.getElementById('totalBoxes').value);
+    const basePrice = parseNumber(document.getElementById('basePrice').value);
     const priceIncludesIva = document.getElementById('priceIncludesIva').value === 'yes';
     const taxTypeValue = taxType.value;
-    const customTaxPercent = parseFloat(document.getElementById('customTaxPercent').value) || 0;
-    const transportCost = parseFloat(document.getElementById('transportCost').value) || 0;
-    const totalBoxesInFreight = parseFloat(document.getElementById('totalBoxesInFreight').value) || 1;
-    const marginPercentage = parseFloat(document.getElementById('marginPercentage').value) || 0;
+    const customTaxPercent = parseNumber(document.getElementById('customTaxPercent').value);
+    const transportCost = parseNumber(document.getElementById('transportCost').value);
+    const totalBoxesInFreight = parseNumber(document.getElementById('totalBoxesInFreight').value) || 1;
+    const marginPercentage = parseNumber(document.getElementById('marginPercentage').value);
 
     if (productsPerBox <= 0 || totalBoxes <= 0 || basePrice <= 0) {
         resetResults();
@@ -412,9 +442,9 @@ function setSalePrice(tier, rounded, costBase) {
 
 // Add input validation visual feedback
 inputs.forEach(input => {
-    if (input.type === 'number') {
+    if (input.type === 'number' || input.inputMode === 'decimal') {
         input.addEventListener('input', function() {
-            const value = parseFloat(this.value);
+            const value = parseNumber(this.value);
             const min = parseFloat(this.min);
 
             if (this.value && min !== undefined && value < min) {
