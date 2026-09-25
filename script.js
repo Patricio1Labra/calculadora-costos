@@ -153,22 +153,30 @@ taxType.addEventListener('change', () => {
 // select oculto #taxType para reutilizar su lógica (change/calculate).
 const taxButtons = Array.from(document.querySelectorAll('#taxButtons .tax-btn'));
 
+const taxCurrentEmoji = document.getElementById('taxCurrentEmoji');
+const taxCurrentName = document.getElementById('taxCurrentName');
+const taxCurrentDesc = document.getElementById('taxCurrentDesc');
+const taxCurrentRate = document.getElementById('taxCurrentRate');
+
 function syncTaxButtons() {
-    const idx = taxButtons.findIndex(btn => btn.dataset.tax === taxType.value);
-    taxButtons.forEach((btn, i) => {
-        const active = i === idx;
+    const current = taxButtons.find(btn => btn.dataset.tax === taxType.value) || taxButtons[0];
+    taxButtons.forEach(btn => {
+        const active = btn === current;
         btn.classList.toggle('active', active);
         btn.setAttribute('aria-checked', active ? 'true' : 'false');
-        // El activo abarca ambas filas en su columna: fila 1 -> su
-        // columna, fila 2 -> misma columna (idx-5). El resto fluye.
-        if (active) {
-            btn.style.gridColumn = ((idx < 5 ? idx : idx - 5) + 1);
-            btn.style.gridRow = '1 / -1';
-        } else {
-            btn.style.gridColumn = '';
-            btn.style.gridRow = '';
-        }
+        btn.style.gridColumn = '';
+        btn.style.gridRow = '';
     });
+    // Tarjeta superior con el detalle (los tiles no cambian de tamaño,
+    // así el orden se mantiene siempre).
+    if (taxCurrentEmoji) taxCurrentEmoji.textContent = current.querySelector('.tax-btn-emoji').textContent;
+    if (taxCurrentName) taxCurrentName.textContent = current.querySelector('.tax-btn-name').textContent;
+    if (taxCurrentDesc) taxCurrentDesc.textContent = current.dataset.tip || '';
+    if (taxCurrentRate) {
+        const rate = current.querySelector('.tax-btn-rate').textContent.trim();
+        taxCurrentRate.textContent = rate;
+        taxCurrentRate.style.display = rate ? '' : 'none';
+    }
 }
 
 taxButtons.forEach(btn => {

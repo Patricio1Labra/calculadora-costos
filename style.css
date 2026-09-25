@@ -354,20 +354,74 @@ main {
 }
 
 /* Impuesto adicional: botonera en vez de dropdown.
-   Matriz fija 5x2: el seleccionado abarca ambas filas en su
-   columna (JS le fija grid-column + grid-row 1/-1); resto 8
-   celdas = matriz siempre llena. Tooltip en hover/foco. */
+   Tarjeta fija arriba con la selección actual + fila de tiles
+   fijos abajo. Nada se mueve jamás: el activo solo se ilumina.
+   Hover/foco revela el texto completo en un tooltip. */
+.tax-current {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    margin-bottom: 8px;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    background:
+        linear-gradient(rgba(22, 31, 50, 0.96), rgba(22, 31, 50, 0.96)) padding-box,
+        linear-gradient(135deg, var(--primary-light), var(--accent-light)) border-box;
+    box-shadow: 0 0 28px rgba(37, 99, 235, 0.3);
+    color: var(--text);
+}
+
+.tax-current-emoji {
+    font-size: 2rem;
+    line-height: 1.1;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+}
+
+.tax-current-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.tax-current-info strong {
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+.tax-current-info span {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tax-current-rate {
+    margin-left: auto;
+    background: rgba(59, 130, 246, 0.22);
+    border: 1px solid rgba(59, 130, 246, 0.55);
+    border-radius: 999px;
+    padding: 2px 14px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
 .tax-buttons {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    grid-template-rows: auto auto;
-    grid-auto-flow: dense;
+    display: flex;
     gap: 8px;
     align-items: stretch;
 }
 
 .tax-btn {
     position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    aspect-ratio: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -387,8 +441,10 @@ main {
 
 .tax-btn:not(.active) {
     min-width: 0;
-    min-height: 60px;
 }
+
+/* El activo NO cambia de tamaño (el orden se mantiene):
+   solo se ilumina. El detalle va en la tarjeta superior. */
 
 .tax-btn-emoji {
     font-size: 1.35rem;
@@ -413,59 +469,16 @@ main {
 }
 
 .tax-btn.active {
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 8px;
-    min-height: 100%;
     border: 2px solid transparent;
     background:
         linear-gradient(rgba(22, 31, 50, 0.96), rgba(22, 31, 50, 0.96)) padding-box,
         linear-gradient(135deg, var(--primary-light), var(--accent-light)) border-box;
     color: var(--text);
-    box-shadow: 0 0 28px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 0 18px rgba(37, 99, 235, 0.35);
 }
 
 .tax-btn.active:hover {
-    transform: none;
-}
-
-.tax-btn.active .tax-btn-emoji {
-    font-size: 2rem;
-    line-height: 1.1;
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
-}
-
-.tax-btn.active .tax-btn-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    max-width: 100%;
-}
-
-.tax-btn.active .tax-btn-rate {
-    background: rgba(59, 130, 246, 0.22);
-    border: 1px solid rgba(59, 130, 246, 0.55);
-    border-radius: 999px;
-    padding: 1px 12px;
-    font-size: 0.78rem;
-    font-weight: 800;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-}
-
-.tax-btn.active .tax-btn-rate:empty {
-    display: none;
-}
-
-.tax-btn.active .tax-btn-name {
-    font-size: 0.85rem;
-    font-weight: 700;
-    white-space: nowrap;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    transform: translateY(-2px);
 }
 
 .tax-btn::after {
@@ -523,11 +536,18 @@ main {
 
 @media (max-width: 640px) {
     .tax-buttons {
+        flex-wrap: wrap;
         gap: 6px;
     }
 
-    .tax-btn.active .tax-btn-emoji {
-        font-size: 1.5rem;
+    .tax-btn {
+        flex: 1 1 44px;
+        aspect-ratio: auto;
+        min-height: 52px;
+    }
+
+    .tax-current-emoji {
+        font-size: 1.6rem;
     }
 }
 

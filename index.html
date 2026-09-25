@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=21">
+    <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
     <div class="container">
@@ -74,6 +74,14 @@
                                 <option value="carne">Carne (5% SII, aplica 4,2%)</option>
                                 <option value="custom">Otro (especificar %)</option>
                             </select>
+                            <div class="tax-current" id="taxCurrent" aria-live="polite">
+                                <span class="tax-current-emoji" id="taxCurrentEmoji" aria-hidden="true">🚫</span>
+                                <span class="tax-current-info">
+                                    <strong id="taxCurrentName">Ninguno</strong>
+                                    <span id="taxCurrentDesc">Sin impuesto adicional</span>
+                                </span>
+                                <span class="tax-current-rate" id="taxCurrentRate" style="display: none;"></span>
+                            </div>
                             <div class="tax-buttons" id="taxButtons" role="radiogroup" aria-label="Impuesto adicional">
                                 <button type="button" class="tax-btn" role="radio" aria-checked="true" data-tax="none" data-tip="Sin impuesto adicional">
                                     <span class="tax-btn-emoji" aria-hidden="true">🚫</span><span class="tax-btn-text"><span class="tax-btn-rate"></span><span class="tax-btn-name">Ninguno</span></span>
@@ -458,6 +466,6 @@
         </footer>
     </div>
 
-    <script src="script.js?v=22"></script>
+    <script src="script.js?v=23"></script>
 </body>
 </html>
