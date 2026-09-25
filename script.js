@@ -233,7 +233,7 @@ function calculate() {
     const productsPerBox = parseNumber(document.getElementById('productsPerBox').value);
     const totalBoxes = parseNumber(document.getElementById('totalBoxes').value);
     const basePrice = parseNumber(document.getElementById('basePrice').value);
-    const priceIncludesIva = document.getElementById('priceIncludesIva').value === 'yes';
+    const priceTaxMode = (document.getElementById('priceIncludesTax') || {}).value || 'no';
     const taxTypeValue = taxType.value;
     const customTaxPercent = parseNumber(document.getElementById('customTaxPercent').value);
     const transportCost = parseNumber(document.getElementById('transportCost').value);
@@ -252,17 +252,26 @@ function calculate() {
         taxRate = customTaxPercent / 100;
     }
 
-    // El precio base es el TOTAL (neto o con IVA) por todas las unidades,
-    // sean 1 o 20 cajas: totalUnidades = productosPorCaja * totalCajas
+    // El precio base es el TOTAL (neto o con impuestos incluidos) por
+    // todas las unidades: totalUnidades = productosPorCaja * totalCajas.
+    // Si el precio ya trae impuestos, se extrae el neto:
+    // - iva: bruto = neto * (1 + IVA)
+    // - ila: bruto = neto * (1 + ILA) [tasa del impuesto elegido]
+    // - both: bruto = neto * (1 + IVA + ILA) [misma base imponible]
+    // Con impuesto "Ninguno" (tasa 0), ila/both equivalen a no/iva.
+    const grossPerUnit = basePrice / totalUnits;
     let ivaPerUnit;
     let costPerUnitBase;
 
-    if (priceIncludesIva) {
-        const totalWithIvaPerUnit = basePrice / totalUnits;
-        ivaPerUnit = totalWithIvaPerUnit * (IVA_RATE / (1 + IVA_RATE));
-        costPerUnitBase = totalWithIvaPerUnit * (1 / (1 + IVA_RATE));
+    if (priceTaxMode === 'iva' || priceTaxMode === 'both') {
+        const divisor = 1 + IVA_RATE + (priceTaxMode === 'both' ? taxRate : 0);
+        costPerUnitBase = grossPerUnit / divisor;
+        ivaPerUnit = costPerUnitBase * IVA_RATE;
+    } else if (priceTaxMode === 'ila') {
+        costPerUnitBase = grossPerUnit / (1 + taxRate);
+        ivaPerUnit = costPerUnitBase * IVA_RATE;
     } else {
-        costPerUnitBase = basePrice / totalUnits;
+        costPerUnitBase = grossPerUnit;
         ivaPerUnit = costPerUnitBase * IVA_RATE;
     }
 

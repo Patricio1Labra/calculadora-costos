@@ -48,10 +48,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="priceIncludesIva">¿El precio incluye IVA?</label>
-                            <select id="priceIncludesIva" required>
-                                <option value="no">No, precio sin IVA</option>
-                                <option value="yes">Sí, precio con IVA incluido</option>
+                            <label for="priceIncludesTax">¿El precio incluye impuestos?</label>
+                            <select id="priceIncludesTax" required>
+                                <option value="no">No, precio neto sin impuestos</option>
+                                <option value="iva">Sí, incluye IVA (19%)</option>
+                                <option value="ila">Sí, incluye impuesto adicional (ILA)</option>
+                                <option value="both">Sí, incluye IVA + ILA</option>
                             </select>
                         </div>
 
