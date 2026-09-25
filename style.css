@@ -354,12 +354,13 @@ main {
 }
 
 /* Impuesto adicional: botonera en vez de dropdown.
-   Matriz fija 5x2: el seleccionado ocupa 2 celdas en su lugar
-   (8x1 + 2 = 10 celdas = 2 filas siempre llenas, con dense
-   para rellenar huecos). Hover/foco revela el texto en tooltip. */
+   Matriz fija 5x2: el seleccionado abarca ambas filas en su
+   columna (JS le fija grid-column + grid-row 1/-1); resto 8
+   celdas = matriz siempre llena. Tooltip en hover/foco. */
 .tax-buttons {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: auto auto;
     grid-auto-flow: dense;
     gap: 8px;
     align-items: stretch;
@@ -412,12 +413,11 @@ main {
 }
 
 .tax-btn.active {
-    grid-column: span 2;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
-    gap: 10px;
-    padding: 6px 12px;
-    min-height: 60px;
+    gap: 8px;
+    padding: 10px 8px;
+    min-height: 100%;
     border: 2px solid transparent;
     background:
         linear-gradient(rgba(22, 31, 50, 0.96), rgba(22, 31, 50, 0.96)) padding-box,
@@ -431,7 +431,7 @@ main {
 }
 
 .tax-btn.active .tax-btn-emoji {
-    font-size: 2.4rem;
+    font-size: 2rem;
     line-height: 1.1;
     filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
 }
