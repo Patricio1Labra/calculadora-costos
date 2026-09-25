@@ -149,6 +149,30 @@ taxType.addEventListener('change', () => {
     calculate();
 });
 
+// Impuesto adicional como botonera: los botones escriben en el
+// select oculto #taxType para reutilizar su lógica (change/calculate).
+const taxButtons = Array.from(document.querySelectorAll('#taxButtons .tax-btn'));
+
+function syncTaxButtons() {
+    taxButtons.forEach(btn => {
+        const active = btn.dataset.tax === taxType.value;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-checked', active ? 'true' : 'false');
+    });
+}
+
+taxButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (taxType.value !== btn.dataset.tax) {
+            taxType.value = btn.dataset.tax;
+            taxType.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        syncTaxButtons();
+    });
+});
+
+syncTaxButtons();
+
 if (unitType) {
     unitType.addEventListener('change', () => {
         updateUnitLabels();
@@ -192,6 +216,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
     form.reset();
     customTaxGroup.style.display = 'none';
     currentValues = {};
+    syncTaxButtons();
     calculate();
 
     // Focus first input after reset
@@ -472,13 +497,14 @@ inputs.forEach(input => {
 
 // Keyboard navigation enhancement
 document.addEventListener('keydown', (e) => {
-    // Enter to move to next input
+    // Enter to move to next input (salta elementos ocultos)
     if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
-        const inputs = Array.from(form.querySelectorAll('input, select'));
-        const currentIndex = inputs.indexOf(e.target);
-        if (currentIndex < inputs.length - 1) {
+        const focusables = Array.from(form.querySelectorAll('input, select'))
+            .filter(el => el.offsetParent !== null);
+        const currentIndex = focusables.indexOf(e.target);
+        if (currentIndex >= 0 && currentIndex < focusables.length - 1) {
             e.preventDefault();
-            inputs[currentIndex + 1].focus();
+            focusables[currentIndex + 1].focus();
         }
     }
 });
@@ -531,8 +557,9 @@ document.addEventListener('keydown', (e) => {
     sync();
 })();
 
-// Add ripple effect to buttons
-document.querySelectorAll('button').forEach(button => {
+// Add ripple effect to buttons (la botonera de impuestos se excluye:
+// el ripple usa overflow hidden y recortaría sus tooltips)
+document.querySelectorAll('button:not(.tax-btn)').forEach(button => {
     button.addEventListener('click', function(e) {
         const ripple = document.createElement('span');
         const rect = this.getBoundingClientRect();

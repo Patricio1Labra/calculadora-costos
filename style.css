@@ -353,6 +353,117 @@ main {
     padding-right: 40px;
 }
 
+/* Impuesto adicional: botonera en vez de dropdown.
+   Compacta (emoji + tasa); el seleccionado muestra su nombre;
+   hover/foco revela el texto completo en un tooltip. */
+.tax-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.tax-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 6px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-secondary);
+    color: var(--text-light);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.tax-btn:hover {
+    border-color: rgba(148, 163, 184, 0.35);
+    color: var(--text);
+    transform: translateY(-1px);
+}
+
+.tax-btn:focus-visible {
+    outline: none;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.tax-btn .tax-btn-name {
+    display: none;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.tax-btn.active {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.25) 0%, rgba(124, 58, 237, 0.25) 100%);
+    color: var(--text);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 0 20px rgba(37, 99, 235, 0.1);
+}
+
+.tax-btn.active .tax-btn-name {
+    display: inline;
+}
+
+.tax-btn::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%) translateY(4px);
+    width: max-content;
+    max-width: 240px;
+    white-space: normal;
+    text-align: center;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 6px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 50;
+    box-shadow: var(--shadow-lg);
+}
+
+.tax-btn:hover::after,
+.tax-btn:focus-visible::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* La card recorta (overflow hidden): alinear tooltips de borde */
+.tax-buttons .tax-btn:nth-child(3n+1)::after {
+    left: 0;
+    transform: translateX(0) translateY(4px);
+}
+
+.tax-buttons .tax-btn:nth-child(3n+1):hover::after,
+.tax-buttons .tax-btn:nth-child(3n+1):focus-visible::after {
+    transform: translateX(0) translateY(0);
+}
+
+.tax-buttons .tax-btn:nth-child(3n)::after {
+    left: auto;
+    right: 0;
+    transform: translateX(0) translateY(4px);
+}
+
+.tax-buttons .tax-btn:nth-child(3n):hover::after,
+.tax-buttons .tax-btn:nth-child(3n):focus-visible::after {
+    transform: translateX(0) translateY(0);
+}
+
 .buttons {
     display: flex;
     justify-content: flex-end;
