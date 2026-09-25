@@ -392,6 +392,7 @@ main {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
+.tax-btn .tax-btn-rate,
 .tax-btn .tax-btn-name {
     display: none;
     font-weight: 600;
@@ -408,6 +409,7 @@ main {
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15), 0 0 20px rgba(37, 99, 235, 0.1);
 }
 
+.tax-btn.active .tax-btn-rate,
 .tax-btn.active .tax-btn-name {
     display: inline;
 }
