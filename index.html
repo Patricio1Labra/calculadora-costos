@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=17">
+    <link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
     <div class="container">
@@ -43,7 +43,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="basePrice">Precio total ($) — neto o con IVA según opción</label>
+                            <label for="basePrice">Precio total ($) — neto o con impuestos según opción</label>
                             <input type="text" inputmode="decimal" id="basePrice" min="0" step="0.01" required placeholder="Ej: 15000 por las 60 unidades">
                         </div>
 
@@ -76,7 +76,7 @@
                             </select>
                             <div class="tax-buttons" id="taxButtons" role="radiogroup" aria-label="Impuesto adicional">
                                 <button type="button" class="tax-btn" role="radio" aria-checked="true" data-tax="none" data-tip="Sin impuesto adicional">
-                                    <span class="tax-btn-emoji" aria-hidden="true">🚫</span><span class="tax-btn-text"><span class="tax-btn-rate">—</span> <span class="tax-btn-name">Ninguno</span></span>
+                                    <span class="tax-btn-emoji" aria-hidden="true">🚫</span><span class="tax-btn-text"><span class="tax-btn-rate"></span><span class="tax-btn-name">Ninguno</span></span>
                                 </button>
                                 <button type="button" class="tax-btn" role="radio" aria-checked="false" data-tax="analcoholicas" data-tip="Bebidas analcohólicas (10% SII, aplica 8,4%)">
                                     <span class="tax-btn-emoji" aria-hidden="true">🥤</span><span class="tax-btn-text"><span class="tax-btn-rate">8,4%</span> <span class="tax-btn-name">Analcohólicas</span></span>
