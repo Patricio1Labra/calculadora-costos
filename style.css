@@ -357,9 +357,7 @@ main {
    Seleccionado grande al costado; resto en tiles uniformes.
    Hover/foco revela el texto completo en un tooltip. */
 .tax-buttons {
-    display: grid;
-    grid-template-columns: auto repeat(4, minmax(0, 1fr));
-    grid-template-rows: auto auto;
+    display: flex;
     gap: 8px;
     align-items: stretch;
 }
@@ -378,16 +376,15 @@ main {
     color: var(--text-light);
     font-family: inherit;
     cursor: pointer;
-    /* Sin 'all': order y grid-column deben aplicarse al instante */
+    /* Transición acotada (sin 'all') para no animar cambios de layout */
     transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease,
         box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tax-btn:not(.active) {
-    justify-self: center;
-    width: 100%;
-    max-width: 58px;
-    aspect-ratio: 1;
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 62px;
 }
 
 .tax-btn-emoji {
@@ -413,12 +410,12 @@ main {
 }
 
 .tax-btn.active {
-    order: -1;
-    grid-column: 1;
-    grid-row: 1 / -1;
-    gap: 8px;
-    padding: 14px 16px;
-    min-width: 118px;
+    flex: 0 0 auto;
+    flex-direction: row;
+    justify-content: center;
+    gap: 12px;
+    padding: 8px 18px;
+    min-height: 62px;
     border: 2px solid transparent;
     background:
         linear-gradient(rgba(22, 31, 50, 0.96), rgba(22, 31, 50, 0.96)) padding-box,
@@ -520,6 +517,20 @@ main {
 .tax-buttons .tax-btn.tip-right:hover::after,
 .tax-buttons .tax-btn.tip-right:focus-visible::after {
     transform: translateX(0) translateY(0);
+}
+
+@media (max-width: 640px) {
+    .tax-buttons {
+        flex-wrap: wrap;
+    }
+
+    .tax-btn.active {
+        flex: 1 1 100%;
+    }
+
+    .tax-btn:not(.active) {
+        flex: 1 1 60px;
+    }
 }
 
 .buttons {
