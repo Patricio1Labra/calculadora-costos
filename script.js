@@ -26,8 +26,7 @@ const TAX_LABELS = {
 
 const UNIT_LABELS = {
     unidades: { singular: 'Unidad', plural: 'Unidades', lower: 'unidad' },
-    gramos: { singular: 'Gramo', plural: 'Gramos', lower: 'gramo' },
-    kilos: { singular: 'Kilo', plural: 'Kilos', lower: 'kilo' }
+    gramos: { singular: 'Gramo', plural: 'Gramos', lower: 'gramo' }
 };
 
 function getUnitLabels() {
@@ -35,14 +34,36 @@ function getUnitLabels() {
     return UNIT_LABELS[unitType] || UNIT_LABELS.unidades;
 }
 
+// Modo gramaje: la unidad es gramos. Los productos por peso nunca
+// vienen en cajas con cantidad uniforme, así que las unidades siempre
+// se obtienen como pesoTotal / gramajePorUnidad
+// (ej. factura por kilos con productos de 100/200/280 g).
+function isGramajeCalcActive() {
+    const ut = (document.getElementById('unitType') || {}).value || 'unidades';
+    return ut === 'gramos';
+}
+
+// En gramos las cajas no son uniformes (ej. una de 48,01 y otra de
+// 47,9): la cantidad de cajas solo sirve para el flete.
+// Se oculta la fila de cajas del producto; las cajas del flete
+// quedan siempre visibles.
+function syncGramajeUI() {
+    const active = isGramajeCalcActive();
+    const inputsRow = document.getElementById('gramajeInputsRow');
+    if (inputsRow) inputsRow.style.display = active ? '' : 'none';
+    const rowBoxes = document.getElementById('rowBoxes');
+    if (rowBoxes) rowBoxes.style.display = active ? 'none' : '';
+}
+
 function updateUnitLabels() {
-    const u = getUnitLabels();
+    const weightMode = isGramajeCalcActive();
+    const u = weightMode ? UNIT_LABELS.unidades : getUnitLabels();
     const customMargin = parseFloat((document.getElementById('marginPercentage') || {}).value) || 0;
     const set = (id, text) => {
         const el = document.getElementById(id);
         if (el) el.textContent = text;
     };
-    set('lblTotalUnits', `Total ${u.plural}`);
+    set('lblTotalUnits', weightMode ? 'Total Unidades' : `Total ${u.plural}`);
     set('lblCostBaseCard', `Costo base / ${u.singular}`);
     set('lblCostTotalCard', `Costo + ILA / ${u.singular}`);
     set('lblSaleUnitTitle', u.lower);
@@ -207,10 +228,13 @@ syncTaxButtons();
 
 if (unitType) {
     unitType.addEventListener('change', () => {
+        syncGramajeUI();
         updateUnitLabels();
         calculate();
     });
 }
+
+syncGramajeUI();
 
 ilaHelpBtn.addEventListener('click', () => {
     ilaModal.style.display = 'flex';
@@ -249,6 +273,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
     customTaxGroup.style.display = 'none';
     currentValues = {};
     syncTaxButtons();
+    syncGramajeUI();
     calculate();
 
     // Focus first input after reset
@@ -296,13 +321,24 @@ function calculate() {
     const transportCost = parseNumber(document.getElementById('transportCost').value);
     const totalBoxesInFreight = parseNumber(document.getElementById('totalBoxesInFreight').value) || 1;
     const marginPercentage = parseNumber(document.getElementById('marginPercentage').value);
+    const weightMode = isGramajeCalcActive();
+    let totalUnits;
 
-    if (productsPerBox <= 0 || totalBoxes <= 0 || basePrice <= 0) {
-        resetResults();
-        return;
+    if (weightMode) {
+        const pesoTotal = parseNumber(document.getElementById('pesoTotalGramos').value);
+        const gramajeUnidad = parseNumber(document.getElementById('gramajePorUnidad').value);
+        if (pesoTotal <= 0 || gramajeUnidad <= 0 || basePrice <= 0) {
+            resetResults();
+            return;
+        }
+        totalUnits = pesoTotal / gramajeUnidad;
+    } else {
+        if (productsPerBox <= 0 || totalBoxes <= 0 || basePrice <= 0) {
+            resetResults();
+            return;
+        }
+        totalUnits = productsPerBox * totalBoxes;
     }
-
-    const totalUnits = productsPerBox * totalBoxes;
 
     let taxRate = TAX_RATES[taxTypeValue];
     if (taxTypeValue === 'custom') {
@@ -310,7 +346,8 @@ function calculate() {
     }
 
     // El precio base es el TOTAL (neto o con impuestos incluidos) por
-    // todas las unidades: totalUnidades = productosPorCaja * totalCajas.
+    // todas las unidades: productosPorCaja * totalCajas
+    // (o pesoTotal / gramajePorUnidad en modo gramaje).
     // Si el precio ya trae impuestos, se extrae el neto:
     // - iva: bruto = neto * (1 + IVA)
     // - ila: bruto = neto * (1 + ILA) [tasa del impuesto elegido]
@@ -332,18 +369,28 @@ function calculate() {
         ivaPerUnit = costPerUnitBase * IVA_RATE;
     }
 
-    const transportPerBox = totalBoxesInFreight > 0 ? transportCost / totalBoxesInFreight : 0;
-    const transportPerUnit = productsPerBox > 0 ? transportPerBox / productsPerBox : 0;
+    let transportPerUnit;
+    if (weightMode) {
+        // Sin cajas uniformes: el flete se reparte entre las unidades
+        transportPerUnit = totalUnits > 0 ? transportCost / totalUnits : 0;
+    } else {
+        const transportPerBox = totalBoxesInFreight > 0 ? transportCost / totalBoxesInFreight : 0;
+        transportPerUnit = productsPerBox > 0 ? transportPerBox / productsPerBox : 0;
+    }
 
     const costBaseConFlete = costPerUnitBase + transportPerUnit;
-    // ILA sobre neto + flete
+    // ILA sobre neto + flete (se muestra como "Costo + ILA")
     const taxPerUnit = costBaseConFlete * taxRate;
     // Costo + ILA sin IVA: base + flete + ILA solamente
     const totalCostPerUnit = costBaseConFlete + taxPerUnit;
+    // Base para los márgenes: costo total con impuestos incluidos
+    // (misma base imponible: neto + flete, + ILA + IVA 19%).
+    const ivaCostPerUnit = costBaseConFlete * IVA_RATE;
+    const costoMargen = totalCostPerUnit + ivaCostPerUnit;
 
-    const sale30 = totalCostPerUnit * 1.30;
-    const sale35 = totalCostPerUnit * 1.35;
-    const sale40 = totalCostPerUnit * 1.40;
+    const sale30 = costoMargen * 1.30;
+    const sale35 = costoMargen * 1.35;
+    const sale40 = costoMargen * 1.40;
 
     // Solo lo necesario en el lado derecho (costos con decimales)
     animateValue('totalUnits', totalUnits, false);
@@ -351,29 +398,37 @@ function calculate() {
     animateValue('costPerUnitTotal', totalCostPerUnit);
 
     // Ventas sin decimales, terminación 00/50/90 al más cercano.
-    // Si chocan, se baja el menor. Se muestra el % real resultante.
+    // Los precios deben ser distintos y crecientes con el margen, y cada
+    // nivel se queda con el más cercano a su objetivo (el que está más
+    // cerca del precio redondeado tiene prioridad sobre él).
+    // Se muestra el % real resultante.
     const tiers = [
         { rowId: 'row30', priceId: 'sale30', realId: 'sale30real', swapId: 'swap30', margin: 30, exact: sale30 },
         { rowId: 'row35', priceId: 'sale35', realId: 'sale35real', swapId: 'swap35', margin: 35, exact: sale35 },
         { rowId: 'row40', priceId: 'sale40', realId: 'sale40real', swapId: 'swap40', margin: 40, exact: sale40 }
     ];
-    if (marginPercentage > 0) {
-        tiers.push({ rowId: 'customMarginRow', priceId: 'saleCustom', realId: 'saleCustomReal', swapId: 'swapCustom', margin: marginPercentage, exact: totalCostPerUnit * (1 + marginPercentage / 100) });
-    }
-    const byDesc = [...tiers].sort((a, b) => b.exact - a.exact);
-    let nextRounded = Infinity;
-    for (const t of byDesc) {
-        let r = commercialRoundNearest(t.exact);
-        let guard = 0;
-        while (r >= nextRounded && guard++ < 20) {
-            r = prevCommercial(nextRounded);
-            if (r <= 0) { r = 0; break; }
+    if (!assignRoundedPrices(tiers)) {
+        // Resguardo: voraz desde el mayor hacia abajo
+        const byDesc = [...tiers].sort((a, b) => b.exact - a.exact);
+        let nextRounded = Infinity;
+        for (const t of byDesc) {
+            let r = commercialRoundNearest(t.exact);
+            let guard = 0;
+            while (r >= nextRounded && guard++ < 20) {
+                r = prevCommercial(nextRounded);
+                if (r <= 0) { r = 0; break; }
+            }
+            t.rounded = r;
+            nextRounded = r;
         }
-        t.rounded = r;
-        nextRounded = r;
+    }
+    if (marginPercentage > 0) {
+        // Margen personalizado: valor exacto, sin aproximación comercial
+        const customExact = costoMargen * (1 + marginPercentage / 100);
+        tiers.push({ rowId: 'customMarginRow', priceId: 'saleCustom', realId: 'saleCustomReal', swapId: 'swapCustom', margin: marginPercentage, exact: customExact, rounded: customExact, noRound: true });
     }
     for (const t of tiers) {
-        setSalePrice(t, t.rounded, totalCostPerUnit);
+        setSalePrice(t, t.rounded, costoMargen);
     }
 
     const customRow = document.getElementById('customMarginRow');
@@ -477,10 +532,64 @@ function prevCommercial(below) {
     return valid.length ? Math.max(...valid) : 0;
 }
 
+function nextCommercial(above) {
+    const cands = commercialCandidates(Math.round(above) + 1);
+    const valid = cands.filter(v => v > above);
+    return valid.length ? Math.min(...valid) : Math.round(above) + 1;
+}
+
+// Candidatos comerciales alrededor del objetivo (el más cercano
+// más 3 escalones hacia abajo y hacia arriba).
+function tierCandidates(exact, steps = 3) {
+    const set = new Set([commercialRoundNearest(exact)]);
+    let down = commercialRoundNearest(exact);
+    for (let i = 0; i < steps; i++) {
+        down = prevCommercial(down);
+        if (down <= 0) break;
+        set.add(down);
+    }
+    let up = commercialRoundNearest(exact);
+    for (let i = 0; i < steps; i++) {
+        const nx = nextCommercial(up);
+        if (nx <= up) break;
+        up = nx;
+        set.add(up);
+    }
+    return [...set].sort((a, b) => a - b);
+}
+
+// Asigna a cada nivel un precio comercial distinto y creciente con el
+// margen, minimizando el error relativo total: el nivel más cercano
+// a un precio redondeado tiene prioridad sobre él.
+function assignRoundedPrices(tiers) {
+    const ordered = [...tiers].sort((a, b) => a.exact - b.exact);
+    const cands = ordered.map(t => tierCandidates(t.exact));
+    const n = ordered.length;
+    const picks = new Array(n);
+    let best = null;
+    function dfs(i, minAbove, err) {
+        if (best && err >= best.err) return;
+        if (i === n) {
+            best = { err, picks: [...picks] };
+            return;
+        }
+        for (const c of cands[i]) {
+            if (c <= minAbove || c <= 0) continue;
+            picks[i] = c;
+            dfs(i + 1, c, err + Math.abs(c - ordered[i].exact) / ordered[i].exact);
+        }
+    }
+    dfs(0, -Infinity, 0);
+    if (!best) return false;
+    ordered.forEach((t, i) => { t.rounded = best.picks[i]; });
+    return true;
+}
+
 function setSalePrice(tier, rounded, costBase) {
     const el = document.getElementById(tier.priceId);
     if (el) {
-        const txt = formatCLPInt(rounded);
+        // Personalizado: valor exacto con decimales, sin aproximación
+        const txt = tier.noRound ? formatCLP(rounded) : formatCLPInt(rounded);
         el.classList.remove('animating');
         void el.offsetWidth;
         el.classList.add('animating');
